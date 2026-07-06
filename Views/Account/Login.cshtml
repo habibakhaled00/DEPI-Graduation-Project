@@ -1,0 +1,44 @@
+@{ ViewData["Title"] = "Login"; }
+<div class="container py-4" style="max-width:440px;">
+    <div class="card shadow-sm">
+        <div class="card-body p-4">
+            <div class="text-center mb-4">
+                <i class="bi bi-shield-lock-fill display-4 text-primary"></i>
+                <h3>Welcome Back</h3>
+            </div>
+            <div id="loginAlert" class="alert alert-danger d-none"></div>
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" required placeholder="you@example.com">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 mb-3" id="loginBtn">Login</button>
+                <div class="text-center">
+                    <a href="/Account/ForgotPassword">Forgot password?</a><br>
+                    <span class="text-muted">No account?</span> <a href="/Account/Register">Register</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@section Scripts {
+<script>
+document.getElementById('loginForm').addEventListener('submit', async(e)=>{
+    e.preventDefault();
+    const btn=document.getElementById('loginBtn');
+    const alert=document.getElementById('loginAlert');
+    alert.classList.add('d-none');
+    btn.disabled=true; btn.textContent='Logging in...';
+    try{
+        const res=await fetch('/api/Auth/login',{method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({email:document.getElementById('email').value,password:document.getElementById('password').value})});
+        if(res.ok){window.location.href='/';}
+        else{const d=await res.json();alert.textContent=d.message||'Login failed.';alert.classList.remove('d-none');}
+    }catch{alert.textContent='Network error.';alert.classList.remove('d-none');}
+    btn.disabled=false;btn.textContent='Login';
+});
+</script>}

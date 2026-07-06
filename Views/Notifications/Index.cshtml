@@ -1,0 +1,20 @@
+@{ ViewData["Title"] = "Notifications"; }
+<div class="container py-4" style="max-width:700px;">
+    <div class="d-flex justify-content-between mb-4"><h2><i class="bi bi-bell"></i> Notifications</h2>
+        <button class="btn btn-outline-secondary btn-sm" onclick="markAllRead()">Mark all read</button></div>
+    <div id="notifList"><div class="text-center py-5"><div class="spinner-border text-primary"></div></div></div>
+</div>
+@section Scripts {
+<script>
+async function load(){
+    const res=await fetch('/api/NotificationsApi');const notifs=await res.json();
+    if(!notifs.length){document.getElementById('notifList').innerHTML='<p class="text-muted text-center py-4">No notifications yet.</p>';return;}
+    let html='<div class="list-group">';
+    notifs.forEach(n=>{html+=`<div class="list-group-item ${!n.isRead?'list-group-item-light':''}">
+        <div class="d-flex justify-content-between"><div><strong>${n.title}</strong><p class="mb-0 text-muted">${n.body}</p></div>
+        <small class="text-muted">${new Date(n.createdAt).toLocaleDateString()}</small></div></div>`;});
+    html+='</div>';document.getElementById('notifList').innerHTML=html;
+}
+async function markAllRead(){await fetch('/api/NotificationsApi/read-all',{method:'PUT'});load();}
+document.addEventListener('DOMContentLoaded',load);
+</script>}

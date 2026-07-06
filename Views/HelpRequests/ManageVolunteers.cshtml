@@ -1,0 +1,40 @@
+@{
+    ViewData["Title"] = "Manage Volunteers";
+    int requestId = ViewBag.RequestId;
+    string requestTitle = ViewBag.RequestTitle;
+}
+
+<div class="container py-4" style="max-width: 800px;">
+    <a asp-controller="HelpRequests" asp-action="Details" asp-route-id="@requestId" class="btn btn-link ps-0 mb-2">
+        <i class="bi bi-arrow-left"></i> Back to request
+    </a>
+    <h2 class="mb-1">Manage Volunteers</h2>
+    <p class="text-muted mb-4">@requestTitle</p>
+
+    <div id="applicantsContainer" class="list-group">
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary"></div>
+        </div>
+    </div>
+</div>
+
+<template id="applicantRowTemplate">
+    <div class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+            <h6 class="mb-1 applicant-name"></h6>
+            <small class="text-muted applicant-date"></small>
+            <span class="badge ms-2 applicant-status"></span>
+        </div>
+        <div class="btn-group applicant-actions">
+            <button class="btn btn-success btn-sm accept-btn"><i class="bi bi-check-lg"></i> Accept</button>
+            <button class="btn btn-outline-danger btn-sm reject-btn"><i class="bi bi-x-lg"></i> Reject</button>
+        </div>
+    </div>
+</template>
+
+@section Scripts {
+    <script>
+        const requestId = @requestId;
+    </script>
+    <script src="~/js/manageVolunteers.js" asp-append-version="true"></script>
+}

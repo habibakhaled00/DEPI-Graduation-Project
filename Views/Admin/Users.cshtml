@@ -1,0 +1,25 @@
+@{ ViewData["Title"] = "User Management"; }
+<div class="container py-4">
+    <div class="d-flex justify-content-between mb-4"><h2><i class="bi bi-people"></i> Users</h2><a href="/Admin/Dashboard" class="btn btn-outline-secondary">Back</a></div>
+    <div class="mb-3"><input type="text" id="searchInput" class="form-control" placeholder="Search users..."></div>
+    <div id="usersTable"></div>
+</div>
+@section Scripts {
+<script>
+let debounce;
+document.getElementById('searchInput').addEventListener('input',(e)=>{clearTimeout(debounce);debounce=setTimeout(()=>loadUsers(e.target.value),300);});
+async function loadUsers(search=''){
+    const url=search?`/api/Admin/users?search=${encodeURIComponent(search)}`:'/api/Admin/users';
+    const res=await fetch(url);const users=await res.json();
+    let html='<table class="table table-hover"><thead class="table-dark"><tr><th>Name</th><th>Email</th><th>Joined</th><th>Roles</th><th>Status</th><th>Action</th></tr></thead><tbody>';
+    users.forEach(u=>{html+=`<tr><td>${u.fullName}</td><td>${u.email}</td><td>${new Date(u.joinedDate).toLocaleDateString()}</td><td>${u.roles.join(', ')}</td>
+        <td><span class="badge ${u.isActive?'bg-success':'bg-danger'}">${u.isActive?'Active':'Inactive'}</span></td>
+        <td><button class="btn btn-sm ${u.isActive?'btn-outline-danger':'btn-outline-success'}" onclick="toggleUser('${u.userId}')">${u.isActive?'Deactivate':'Activate'}</button></td></tr>`;});
+    html+='</tbody></table>';document.getElementById('usersTable').innerHTML=html;
+}
+async function toggleUser(id){
+    if(!confirm('Are you sure?'))return;
+    await fetch(`/api/Admin/users/${id}/toggle-status`,{method:'PUT'});loadUsers();
+}
+document.addEventListener('DOMContentLoaded',()=>loadUsers());
+</script>}

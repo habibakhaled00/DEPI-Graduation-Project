@@ -1,0 +1,16 @@
+@{ ViewData["Title"] = "Reports"; }
+<div class="container py-4">
+    <h2><i class="bi bi-bar-chart"></i> Reports</h2>
+    <p class="text-muted">View detailed analytics from the <a href="/Admin/Dashboard">Dashboard</a>.</p>
+    <div id="logsSection"><h5 class="mt-4">Admin Activity Logs</h5><div id="logsTable"></div></div>
+</div>
+@section Scripts {
+<script>
+async function loadLogs(){
+    const res=await fetch('/api/Admin/logs');const logs=await res.json();
+    let html='<table class="table table-sm"><thead><tr><th>Action</th><th>Details</th><th>Admin</th><th>Date</th></tr></thead><tbody>';
+    logs.forEach(l=>{html+=`<tr><td>${l.action}</td><td>${l.details||''}</td><td>${l.adminName}</td><td>${new Date(l.createdAt).toLocaleString()}</td></tr>`;});
+    html+='</tbody></table>';document.getElementById('logsTable').innerHTML=html;
+}
+document.addEventListener('DOMContentLoaded',loadLogs);
+</script>}

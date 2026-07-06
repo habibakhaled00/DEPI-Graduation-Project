@@ -1,0 +1,29 @@
+@{ ViewData["Title"] = "Settings"; }
+<div class="container py-4" style="max-width:550px;">
+    <h3 class="mb-4"><i class="bi bi-gear"></i> Profile Settings</h3>
+    <div id="settingsAlert" class="alert d-none"></div>
+    <form id="settingsForm">
+        <div class="row"><div class="col-6 mb-3"><label class="form-label">First Name</label><input class="form-control" id="firstName"></div>
+            <div class="col-6 mb-3"><label class="form-label">Last Name</label><input class="form-control" id="lastName"></div></div>
+        <div class="mb-3"><label class="form-label">Bio</label><textarea class="form-control" id="bio" rows="3"></textarea></div>
+        <div class="mb-3"><label class="form-label">Address</label><input class="form-control" id="address"></div>
+        <div class="mb-3"><label class="form-label">Phone</label><input class="form-control" id="phone"></div>
+        <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+    </form>
+</div>
+@section Scripts {
+<script>
+async function load(){const res=await fetch('/api/UserProfile');if(!res.ok)return;const p=await res.json();
+    document.getElementById('firstName').value=p.fullName.split(' ')[0]||'';
+    document.getElementById('lastName').value=p.fullName.split(' ').slice(1).join(' ')||'';
+    document.getElementById('address').value=p.address||'';}
+document.getElementById('settingsForm').addEventListener('submit',async(e)=>{
+    e.preventDefault();const alert=document.getElementById('settingsAlert');
+    const res=await fetch('/api/UserProfile',{method:'PUT',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({firstName:document.getElementById('firstName').value,lastName:document.getElementById('lastName').value,
+            bio:document.getElementById('bio').value,address:document.getElementById('address').value,phoneNumber:document.getElementById('phone').value})});
+    if(res.ok){alert.className='alert alert-success';alert.textContent='Profile updated!';}
+    else{alert.className='alert alert-danger';alert.textContent='Failed to update.';}
+});
+document.addEventListener('DOMContentLoaded',load);
+</script>}

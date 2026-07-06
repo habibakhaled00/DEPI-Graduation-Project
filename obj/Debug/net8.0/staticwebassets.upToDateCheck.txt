@@ -1,0 +1,7 @@
+wwwroot\css\site.css
+wwwroot\js\chat.js
+wwwroot\js\createRequest.js
+wwwroot\js\manageVolunteers.js
+wwwroot\js\notifications.js
+wwwroot\js\requestDetails.js
+wwwroot\js\requestsBoard.js

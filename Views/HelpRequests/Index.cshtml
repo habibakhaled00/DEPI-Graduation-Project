@@ -1,0 +1,83 @@
+@{
+    ViewData["Title"] = "Requests Board";
+    var categories = ViewBag.Categories as List<NeighborHelp.Models.Category>;
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h2 class="mb-0">Community Help Requests</h2>
+        <a asp-controller="HelpRequests" asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> New Request
+        </a>
+    </div>
+
+    <div class="row g-2 mb-4">
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                <input type="text" id="searchInput" class="form-control" placeholder="Search by title, description, or address...">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select id="categoryFilter" class="form-select">
+                <option value="">All Categories</option>
+                @if (categories != null)
+                {
+                    foreach (var c in categories)
+                    {
+                        <option value="@c.CategoryId">@c.Name</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select id="statusFilter" class="form-select">
+                <option value="">All Statuses</option>
+                <option value="Open">Open</option>
+                <option value="Pending">Pending</option>
+                <option value="Accepted">Accepted</option>
+                <option value="Completed">Completed</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="loadingIndicator" class="text-center py-5 d-none">
+        <div class="spinner-border text-primary" role="status"></div>
+    </div>
+
+    <div id="requestsContainer" class="row g-3"></div>
+
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center" id="pagination"></ul>
+    </nav>
+</div>
+
+<template id="requestCardTemplate">
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <h5 class="card-title req-title"></h5>
+                    <span class="badge req-status-badge"></span>
+                </div>
+                <p class="text-muted small req-category mb-2"></p>
+                <p class="card-text req-description"></p>
+                <p class="small text-secondary mb-1"><i class="bi bi-geo-alt"></i> <span class="req-address"></span></p>
+                <p class="small text-muted req-meta mb-0"></p>
+            </div>
+            <div class="card-footer bg-white border-top-0 d-flex justify-content-between">
+                <a href="#" class="btn btn-outline-secondary btn-sm req-details-btn">View</a>
+                <button class="btn btn-success btn-sm req-volunteer-btn">
+                    <i class="bi bi-hand-thumbs-up"></i> Volunteer
+                </button>
+            </div>
+        </div>
+    </div>
+</template>
+
+@section Scripts {
+    <script>
+        window.CurrentUID = "@(User.Identity != null && User.Identity.IsAuthenticated ? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value : "")";
+    </script>
+    <script src="~/js/requestsBoard.js" asp-append-version="true"></script>
+}

@@ -1,0 +1,37 @@
+@{ ViewData["Title"] = "Profile"; var targetUser = ViewBag.UserId as string; }
+<div class="container py-4" style="max-width:700px;">
+    <div id="profileCard" class="card shadow-sm"><div class="card-body text-center py-5"><div class="spinner-border text-primary"></div></div></div>
+    <div id="ratingsSection" class="mt-4"></div>
+</div>
+@section Scripts {
+<script>
+const targetUserId = "@(targetUser ?? "")";
+const CurrentUID = "@(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "")";
+async function loadProfile(){
+    const url = targetUserId ? `/api/UserProfile/${targetUserId}` : '/api/UserProfile';
+    const res = await fetch(url);
+    if(!res.ok){document.getElementById('profileCard').innerHTML='<div class="card-body text-danger">Profile not found.</div>';return;}
+    const p = await res.json();
+    document.getElementById('profileCard').innerHTML=`
+        <div class="card-body text-center">
+            <i class="bi bi-person-circle display-1 text-primary"></i>
+            <h3 class="mt-2">${p.fullName}</h3>
+            ${p.email?`<p class="text-muted">${p.email}</p>`:''}
+            ${p.bio?`<p>${p.bio}</p>`:''}
+            ${p.address?`<p><i class="bi bi-geo-alt"></i> ${p.address}</p>`:''}
+            <div class="row mt-3">
+                <div class="col-4"><h4>${p.averageRating}</h4><small class="text-muted">Rating</small></div>
+                <div class="col-4"><h4>${p.requestsPosted}</h4><small class="text-muted">Requests</small></div>
+                <div class="col-4"><h4>${p.peopleHelped}</h4><small class="text-muted">Helped</small></div>
+            </div>
+            ${(!targetUserId||targetUserId===CurrentUID)?'<a href="/Account/Settings" class="btn btn-outline-primary mt-3"><i class="bi bi-gear"></i> Edit Profile</a>':''}
+        </div>`;
+    // load ratings
+    const rRes = await fetch(`/api/Ratings/user/${p.userId}`);
+    if(rRes.ok){const rd=await rRes.json();
+        if(rd.ratings.length>0){let html='<h5>Reviews</h5><div class="list-group">';
+            rd.ratings.forEach(r=>{html+=`<div class="list-group-item"><div class="d-flex justify-content-between"><strong>${r.raterName}</strong><span>${'★'.repeat(r.score)}${'☆'.repeat(5-r.score)}</span></div>${r.comment?`<p class="mb-0 text-muted">${r.comment}</p>`:''}${r.reviewContent?`<p class="mb-0 small">${r.reviewContent}</p>`:''}</div>`;});
+            html+='</div>';document.getElementById('ratingsSection').innerHTML=html;}}
+}
+document.addEventListener('DOMContentLoaded',loadProfile);
+</script>}

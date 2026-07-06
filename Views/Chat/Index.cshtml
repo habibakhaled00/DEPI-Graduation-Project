@@ -1,0 +1,32 @@
+@{
+    ViewData["Title"] = "Chat";
+    int requestId = ViewBag.RequestId;
+    string requestTitle = ViewBag.RequestTitle;
+}
+
+<div class="container py-4" style="max-width: 750px;">
+    <a asp-controller="HelpRequests" asp-action="Details" asp-route-id="@requestId" class="btn btn-link ps-0 mb-2">
+        <i class="bi bi-arrow-left"></i> Back to request
+    </a>
+    <h2 class="mb-1"><i class="bi bi-chat-dots"></i> Chat</h2>
+    <p class="text-muted mb-3">@requestTitle</p>
+
+    <div id="connectionStatus" class="alert alert-warning py-2 small">Connecting...</div>
+
+    <div id="chatWindow" class="chat-window mb-3"></div>
+
+    <form id="chatForm" class="d-flex gap-2">
+        <input type="text" id="messageInput" class="form-control" placeholder="Type a message..." autocomplete="off" maxlength="1000" disabled>
+        <button type="submit" class="btn btn-primary" id="sendBtn" disabled>
+            <i class="bi bi-send"></i>
+        </button>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        const requestId = @requestId;
+        const CurrentUID = "@(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value)";
+    </script>
+    <script src="~/js/chat.js" asp-append-version="true"></script>
+}

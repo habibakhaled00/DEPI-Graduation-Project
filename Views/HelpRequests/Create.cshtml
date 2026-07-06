@@ -1,0 +1,65 @@
+@{
+    ViewData["Title"] = "New Help Request";
+    var categories = ViewBag.Categories as List<NeighborHelp.Models.Category>;
+}
+
+<div class="container py-4" style="max-width: 700px;">
+    <h2 class="mb-4">Submit a Help Request</h2>
+
+    <form id="createRequestForm">
+        <div class="mb-3">
+            <label class="form-label">Title</label>
+            <input type="text" class="form-control" id="title" required maxlength="150"
+                   placeholder="e.g. Need help moving a couch">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Category</label>
+            <select class="form-select" id="categoryId" required>
+                <option value="">-- Select Category --</option>
+                @if (categories != null)
+                {
+                    foreach (var c in categories)
+                    {
+                        <option value="@c.CategoryId">@c.Name</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" id="description" rows="4" required maxlength="2000"
+                      placeholder="Describe what you need help with..."></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Address</label>
+            <input type="text" class="form-control" id="address" required maxlength="300"
+                   placeholder="e.g. 12 Nile St, Cairo">
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label">Latitude (optional)</label>
+                <input type="number" step="any" class="form-control" id="latitude">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Longitude (optional)</label>
+                <input type="number" step="any" class="form-control" id="longitude">
+            </div>
+        </div>
+
+        <button type="button" class="btn btn-outline-secondary mb-3" id="useLocationBtn">
+            <i class="bi bi-geo"></i> Use My Current Location
+        </button>
+
+        <div id="formAlert" class="alert alert-danger d-none"></div>
+
+        <button type="submit" class="btn btn-primary w-100" id="submitBtn">Submit Request</button>
+    </form>
+</div>
+
+@section Scripts {
+    <script src="~/js/createRequest.js" asp-append-version="true"></script>
+}

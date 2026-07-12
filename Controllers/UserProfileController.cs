@@ -54,7 +54,12 @@ namespace NeighborHelp.Controllers
             if (dto.Address != null) user.Address = dto.Address;
             if (dto.PhoneNumber != null) user.PhoneNumber = dto.PhoneNumber;
 
-            await _user.UpdateAsync(user);
+            var result = await _user.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                return BadRequest(new { message = errors });
+            }
             return Ok(new { message = "Profile updated." });
         }
 
@@ -71,6 +76,7 @@ namespace NeighborHelp.Controllers
                 Email = isOwn ? user.Email! : "",
                 Bio = user.Bio,
                 Address = user.Address,
+                PhoneNumber = isOwn ? user.PhoneNumber : "",
                 JoinedDate = user.JoinedDate,
                 AverageRating = Math.Round(avgRating, 1),
                 RequestsPosted = await _db.HelpRequests.CountAsync(h => h.UserId == user.Id),

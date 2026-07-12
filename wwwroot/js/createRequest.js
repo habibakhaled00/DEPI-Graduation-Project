@@ -1,13 +1,16 @@
-document.getElementById("useLocationBtn").addEventListener("click", () => {
-    if (!navigator.geolocation) {
-        alert("Geolocation is not supported by your browser.");
-        return;
-    }
-    navigator.geolocation.getCurrentPosition(pos => {
-        document.getElementById("latitude").value = pos.coords.latitude;
-        document.getElementById("longitude").value = pos.coords.longitude;
-    }, () => alert("Unable to retrieve your location."));
-});
+const locBtn = document.getElementById("useLocationBtn");
+if (locBtn) {
+    locBtn.addEventListener("click", () => {
+        if (!navigator.geolocation) {
+            alert("Geolocation is not supported by your browser.");
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(pos => {
+            document.getElementById("latitude").value = pos.coords.latitude;
+            document.getElementById("longitude").value = pos.coords.longitude;
+        }, () => alert("Unable to retrieve your location."));
+    });
+}
 
 document.getElementById("createRequestForm").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -37,7 +40,7 @@ document.getElementById("createRequestForm").addEventListener("submit", async (e
         if (res.ok) {
             window.location.href = "/HelpRequests/Index";
         } else if (res.status === 401) {
-            window.location.href = "/Identity/Account/Login";
+            window.location.href = "/Account/Login";
         } else {
             const msg = await res.text();
             alertBox.textContent = msg || "Failed to submit request. Please check your inputs.";

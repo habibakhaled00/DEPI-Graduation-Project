@@ -1,34 +1,197 @@
-@{ ViewData["Title"] = "Admin Dashboard"; }
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    var statsJson = ViewBag.StatsJson as string ?? "{}";
+    var logsJson  = ViewBag.LogsJson  as string ?? "[]";
+}
+
 <div class="container py-4">
-    <h2 class="mb-4"><i class="bi bi-shield-lock"></i> Admin Dashboard</h2>
-    <div class="row mb-4" id="statsCards"></div>
-    <div class="row mb-4">
-        <div class="col-md-6"><div class="card shadow-sm p-3"><h5>Requests by Category</h5><canvas id="catChart" height="200"></canvas></div></div>
-        <div class="col-md-6"><div class="card shadow-sm p-3"><h5>Monthly Activity</h5><canvas id="monthChart" height="200"></canvas></div></div>
+
+    <!-- Hero Header -->
+    <div class="nh-card no-hover mb-4 sr"
+         style="background:linear-gradient(135deg,rgba(108,99,255,0.15) 0%,rgba(0,212,170,0.08) 100%);
+                padding:1.8rem 2rem;position:relative;overflow:hidden">
+        <div style="position:absolute;width:280px;height:280px;border-radius:50%;
+                    background:rgba(108,99,255,0.12);filter:blur(70px);
+                    top:-80px;right:-60px;pointer-events:none"></div>
+        <div style="position:absolute;width:180px;height:180px;border-radius:50%;
+                    background:rgba(0,212,170,0.1);filter:blur(50px);
+                    bottom:-50px;left:20%;pointer-events:none"></div>
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3" style="position:relative;z-index:1">
+            <div>
+                <h1 style="font-size:1.7rem;font-weight:800;margin-bottom:0.2rem">
+                    <i class="bi bi-shield-lock me-2" style="color:var(--accent)"></i>
+                    <span style="background:linear-gradient(135deg,var(--accent),var(--accent-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Admin</span>
+                    Dashboard
+                </h1>
+                <p class="mb-0" style="color:var(--text-muted);font-size:0.85rem">
+                    <span class="pulse-dot me-2"></span>Platform overview and management
+                </p>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="/Admin/Users"    class="quick-action-btn" style="width:auto;padding:0.5rem 1rem"><i class="bi bi-people"></i> Users</a>
+                <a href="/Admin/Requests" class="quick-action-btn" style="width:auto;padding:0.5rem 1rem"><i class="bi bi-card-list"></i> Requests</a>
+                <a href="/Admin/Chats"    class="quick-action-btn" style="width:auto;padding:0.5rem 1rem"><i class="bi bi-chat-dots"></i> Chats</a>
+                <a href="/Admin/Reports"  class="quick-action-btn" style="width:auto;padding:0.5rem 1rem"><i class="bi bi-bar-chart"></i> Reports</a>
+            </div>
+        </div>
     </div>
-    <div class="d-flex gap-2 mb-3">
-        <a href="/Admin/Users" class="btn btn-outline-primary"><i class="bi bi-people"></i> Manage Users</a>
-        <a href="/Admin/Reports" class="btn btn-outline-secondary"><i class="bi bi-bar-chart"></i> Reports</a>
+
+    <!-- Stat Cards (rendered server-side, animated via JS) -->
+    <div class="row g-3 mb-4 stagger" id="statsCards"></div>
+
+    <!-- Charts -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-5 sr-left">
+            <div class="nh-card p-3 h-100">
+                <h5 class="mb-3" style="font-size:0.82rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.07em">
+                    <i class="bi bi-pie-chart me-1" style="color:var(--accent)"></i>Requests by Category
+                </h5>
+                <canvas id="catChart"></canvas>
+            </div>
+        </div>
+        <div class="col-lg-7 sr-right">
+            <div class="nh-card p-3 h-100">
+                <h5 class="mb-3" style="font-size:0.82rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.07em">
+                    <i class="bi bi-graph-up me-1" style="color:var(--accent-2)"></i>Monthly Activity (Last 6 Months)
+                </h5>
+                <canvas id="monthChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Logs -->
+    <div class="nh-card p-3 sr">
+        <h5 class="mb-3" style="font-size:0.82rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.07em">
+            <i class="bi bi-clock-history me-1" style="color:var(--accent-3)"></i>Recent Activity Logs
+        </h5>
+        <div id="logsTable"></div>
     </div>
 </div>
+
 @section Scripts {
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-async function load(){
-    const res=await fetch('/api/Admin/dashboard');
-    if(!res.ok){alert('Admin access denied.');return;}
-    const d=await res.json();
-    document.getElementById('statsCards').innerHTML=
-        [{l:'Users',v:d.totalUsers,c:'primary'},{l:'Requests',v:d.totalRequests,c:'success'},
-         {l:'Open',v:d.openRequests,c:'info'},{l:'Completed',v:d.completedRequests,c:'secondary'},
-         {l:'Avg Rating',v:d.averageRating,c:'warning'},{l:'Messages',v:d.totalMessages,c:'dark'}]
-        .map(s=>`<div class="col-md-2 mb-3"><div class="card text-center p-3 text-white bg-${s.c}"><h3>${s.v}</h3><small>${s.l}</small></div></div>`).join('');
-    new Chart(document.getElementById('catChart'),{type:'doughnut',
-        data:{labels:d.categoryStats.map(c=>c.name),datasets:[{data:d.categoryStats.map(c=>c.count),backgroundColor:['#0d9488','#14b8a6','#f43f5e','#6366f1','#f97316','#8b5cf6','#06b6d4','#64748b']}]},
-        options:{plugins:{legend:{position:'bottom'}}}});
-    new Chart(document.getElementById('monthChart'),{type:'bar',
-        data:{labels:d.monthlyStats.map(m=>m.month),datasets:[{label:'Requests',data:d.monthlyStats.map(m=>m.requests),backgroundColor:'#0d9488'},{label:'Completed',data:d.monthlyStats.map(m=>m.completed),backgroundColor:'#14b8a6'}]},
-        options:{scales:{y:{beginAtZero:true}}}});
+    // ── Server-side data (no API call needed) ────────────────
+    const DASH = @Html.Raw(statsJson);
+    const LOGS = @Html.Raw(logsJson);
+
+    let catChartInst, monthChartInst;
+
+    function getTheme() {
+        const dark = document.documentElement.getAttribute('data-theme') !== 'light';
+        return {
+            grid:   dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.07)',
+            text:   dark ? '#9ba3c2' : '#4a4f6b',
+        };
+    }
+
+    // ── Build stat cards ─────────────────────────────────────
+    function buildStatCards() {
+        const stats = [
+            { icon:'bi-people-fill',    label:'Total Users',    value: DASH.totalUsers,       color:'#6c63ff' },
+            { icon:'bi-card-list',      label:'Total Requests', value: DASH.totalRequests,    color:'#06b6d4' },
+            { icon:'bi-circle',         label:'Open',           value: DASH.openRequests,     color:'#00d4aa' },
+            { icon:'bi-check-circle',   label:'Accepted',      value: DASH.completedRequests,color:'#8b84ff' },
+            { icon:'bi-star-fill',      label:'Avg Rating',     value: DASH.averageRating,    color:'#ffaa00' },
+            { icon:'bi-chat-dots-fill', label:'Messages',       value: DASH.totalMessages,    color:'#f43f5e' },
+        ];
+
+        document.getElementById('statsCards').innerHTML = stats.map(s => `
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="stat-card">
+                    <div class="stat-icon" style="color:${s.color}"><i class="bi ${s.icon}"></i></div>
+                    <div class="stat-value count-up"
+                         style="background:linear-gradient(135deg,${s.color},${s.color}99);
+                                -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+                                background-clip:text">${s.value}</div>
+                    <div class="stat-label">${s.label}</div>
+                </div>
+            </div>`).join('');
+
+        // Trigger counter animation after render
+        if (window.initCounters) initCounters();
+    }
+
+    // ── Build charts ─────────────────────────────────────────
+    function buildCharts() {
+        const th = getTheme();
+        const P  = ['#6c63ff','#00d4aa','#ff6b6b','#ffaa00','#06b6d4','#f43f5e','#8b5cf6','#64748b'];
+
+        if (catChartInst) catChartInst.destroy();
+        catChartInst = new Chart(document.getElementById('catChart'), {
+            type: 'doughnut',
+            data: {
+                labels:   (DASH.categoryStats || []).map(c => c.name),
+                datasets: [{ data: (DASH.categoryStats || []).map(c => c.count),
+                             backgroundColor: P, borderWidth: 0, hoverOffset: 10 }]
+            },
+            options: {
+                plugins: { legend: { position:'bottom', labels:{ color:th.text, padding:14, font:{size:12} } } },
+                cutout: '65%', animation: { animateRotate: true, duration: 900 }
+            }
+        });
+
+        if (monthChartInst) monthChartInst.destroy();
+        monthChartInst = new Chart(document.getElementById('monthChart'), {
+            type: 'bar',
+            data: {
+                labels:   (DASH.monthlyStats || []).map(m => m.month),
+                datasets: [
+                    { label:'Requests',  data:(DASH.monthlyStats||[]).map(m=>m.requests),
+                      backgroundColor:'rgba(108,99,255,0.75)', borderRadius:6 },
+                    { label:'Accepted',  data:(DASH.monthlyStats||[]).map(m=>m.completed),
+                      backgroundColor:'rgba(0,212,170,0.75)',  borderRadius:6 },
+                ]
+            },
+            options: {
+                scales: {
+                    x: { ticks:{color:th.text}, grid:{color:th.grid} },
+                    y: { beginAtZero:true, ticks:{color:th.text}, grid:{color:th.grid} }
+                },
+                plugins: { legend:{ labels:{ color:th.text, font:{size:12} } } },
+                animation: { duration: 800 }
+            }
+        });
+    }
+
+    // ── Build activity logs table ─────────────────────────────
+    function buildLogs() {
+        const logs = LOGS;
+        if (!logs.length) {
+            document.getElementById('logsTable').innerHTML =
+                '<p style="color:var(--text-muted);font-size:0.875rem">No recent activity.</p>';
+            return;
+        }
+
+        let html = `<div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead><tr><th>Action</th><th>Details</th><th>Admin</th><th>When</th></tr></thead>
+                <tbody>`;
+
+        logs.forEach(l => {
+            html += `<tr>
+                <td><span class="status-badge status-accepted">${l.action}</span></td>
+                <td style="color:var(--text-secondary);font-size:0.82rem">${l.details || ''}</td>
+                <td style="font-weight:500">${l.adminName || ''}</td>
+                <td style="color:var(--text-muted);font-size:0.78rem">${new Date(l.createdAt).toLocaleString()}</td>
+            </tr>`;
+        });
+
+        html += '</tbody></table></div>';
+        document.getElementById('logsTable').innerHTML = html;
+    }
+
+    // ── Init ──────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+        buildStatCards();
+        buildCharts();
+        buildLogs();
+    });
+
+    // Rebuild charts on theme toggle
+    document.getElementById('themeToggle')?.addEventListener('click', () => {
+        setTimeout(buildCharts, 120);
+    });
+</script>
 }
-document.addEventListener('DOMContentLoaded',load);
-</script>}

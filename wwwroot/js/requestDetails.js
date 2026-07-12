@@ -59,7 +59,7 @@ async function loadDetails() {
             rejected.className = "btn btn-outline-danger disabled";
             rejected.innerHTML = `<i class="bi bi-x-circle"></i> Application rejected`;
             actionArea.appendChild(rejected);
-        } else if (r.status === "Open") {
+        } else if (r.status === "Open" || r.status === "Pending") {
             const volBtn = document.createElement("button");
             volBtn.className = "btn btn-success";
             volBtn.innerHTML = `<i class="bi bi-hand-thumbs-up"></i> Volunteer for this Request`;
@@ -82,17 +82,29 @@ async function volunteerFor(btn) {
     try {
         const res = await fetch(`/api/Volunteer/apply/${requestId}`, { method: "POST" });
         if (res.ok) {
-            btn.innerHTML = `<i class="bi bi-check-circle"></i> Applied`;
+            btn.innerHTML = `<i class="bi bi-hourglass-split"></i> Pending`;
+            btn.classList.replace("btn-success", "btn-outline-secondary");
+            btn.disabled = true;
+            if (window.nhToast) window.nhToast("You have volunteered for this request!");
+            setTimeout(() => { window.location.reload(); }, 1200);
         } else if (res.status === 401) {
-            window.location.href = "/Identity/Account/Login";
+            window.location.href = "/Account/Login";
         } else {
-            alert(await res.text());
+            let errorText = "Could not apply.";
+            try {
+                const errObj = await res.json();
+                errorText = errObj.message || errorText;
+            } catch {
+                try { errorText = await res.text() || errorText; } catch {}
+            }
+            if (window.nhToast) window.nhToast(errorText, "error");
             btn.disabled = false;
             btn.innerHTML = `<i class="bi bi-hand-thumbs-up"></i> Volunteer for this Request`;
         }
     } catch {
-        alert("Network error.");
+        if (window.nhToast) window.nhToast("Network error. Please try again.", "error");
         btn.disabled = false;
+        btn.innerHTML = `<i class="bi bi-hand-thumbs-up"></i> Volunteer for this Request`;
     }
 }
 

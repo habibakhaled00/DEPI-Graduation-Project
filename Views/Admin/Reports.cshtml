@@ -1,16 +1,162 @@
-@{ ViewData["Title"] = "Reports"; }
-<div class="container py-4">
-    <h2><i class="bi bi-bar-chart"></i> Reports</h2>
-    <p class="text-muted">View detailed analytics from the <a href="/Admin/Dashboard">Dashboard</a>.</p>
-    <div id="logsSection"><h5 class="mt-4">Admin Activity Logs</h5><div id="logsTable"></div></div>
-</div>
-@section Scripts {
-<script>
-async function loadLogs(){
-    const res=await fetch('/api/Admin/logs');const logs=await res.json();
-    let html='<table class="table table-sm"><thead><tr><th>Action</th><th>Details</th><th>Admin</th><th>Date</th></tr></thead><tbody>';
-    logs.forEach(l=>{html+=`<tr><td>${l.action}</td><td>${l.details||''}</td><td>${l.adminName}</td><td>${new Date(l.createdAt).toLocaleString()}</td></tr>`;});
-    html+='</tbody></table>';document.getElementById('logsTable').innerHTML=html;
+@{
+    ViewData["Title"] = "Reports";
 }
-document.addEventListener('DOMContentLoaded',loadLogs);
-</script>}
+
+<div class="container py-4 fade-up">
+
+    <!-- Header -->
+    <div class="page-header mb-4">
+        <div>
+            <h1 class="section-title mb-1">
+                <i class="bi bi-bar-chart me-2" style="color:var(--accent-2)"></i>Reports
+            </h1>
+            <p class="mb-0" style="color:var(--text-muted);font-size:0.85rem">
+                Platform analytics and activity logs
+            </p>
+        </div>
+        <a href="/Admin/Dashboard" class="quick-action-btn" style="width:auto;padding:0.5rem 1rem">
+            <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row g-3 mb-4 stagger" id="reportStats">
+        <div class="col-12 text-center py-4">
+            <div class="spinner-border" role="status"></div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-6">
+            <div class="nh-card p-3">
+                <h5 style="font-size:0.85rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:1rem">
+                    <i class="bi bi-pie-chart me-1" style="color:var(--accent)"></i>Category Breakdown
+                </h5>
+                <canvas id="repCatChart" height="220"></canvas>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="nh-card p-3">
+                <h5 style="font-size:0.85rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:1rem">
+                    <i class="bi bi-graph-up me-1" style="color:var(--accent-2)"></i>Monthly Trend
+                </h5>
+                <canvas id="repMonthChart" height="220"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activity Logs -->
+    <div class="nh-card p-3">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h5 style="font-size:0.85rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.07em;margin:0">
+                <i class="bi bi-clock-history me-1" style="color:var(--accent-3)"></i>Admin Activity Logs
+            </h5>
+            <span id="logCount" class="badge-admin-tag" style="font-size:0.72rem"></span>
+        </div>
+        <div class="table-responsive" id="logsTable">
+            <div class="text-center py-4"><div class="spinner-border spinner-border-sm"></div></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    async function loadReports() {
+        // Fetch dashboard stats
+        const res = await fetch('/api/Admin/dashboard');
+        if (!res.ok) return;
+        const d = await res.json();
+
+        // Summary cards
+        const cards = [
+            { icon: 'bi-people-fill',   label: 'Total Users',  value: d.totalUsers,        color: '#6c63ff' },
+            { icon: 'bi-card-list',     label: 'Total Req.',   value: d.totalRequests,     color: '#06b6d4' },
+            { icon: 'bi-check-circle',  label: 'Accepted',     value: d.completedRequests, color: '#8b84ff' },
+            { icon: 'bi-star-fill',     label: 'Avg Rating',   value: d.averageRating,     color: '#ffaa00' },
+        ];
+        document.getElementById('reportStats').innerHTML = cards.map(s => `
+            <div class="col-6 col-md-3 fade-up">
+                <div class="stat-card">
+                    <div class="stat-icon" style="color:${s.color}"><i class="bi ${s.icon}"></i></div>
+                    <div class="stat-value" style="background:linear-gradient(135deg,${s.color},${s.color}99);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">
+                        ${s.value}</div>
+                    <div class="stat-label">${s.label}</div>
+                </div>
+            </div>`).join('');
+
+        const isDark   = document.documentElement.getAttribute('data-theme') !== 'light';
+        const tc = isDark ? '#9ba3c2' : '#4a4f6b';
+        const gc = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.07)';
+        const PALETTE = ['#6c63ff','#00d4aa','#ff6b6b','#ffaa00','#06b6d4','#f43f5e','#8b5cf6'];
+
+        new Chart(document.getElementById('repCatChart'), {
+            type: 'doughnut',
+            data: {
+                labels: d.categoryStats.map(c => c.name),
+                datasets: [{ data: d.categoryStats.map(c => c.count), backgroundColor: PALETTE, borderWidth: 0 }]
+            },
+            options: {
+                plugins: { legend: { position: 'bottom', labels: { color: tc, padding: 10, font: { size: 11 } } } },
+                cutout: '60%'
+            }
+        });
+
+        new Chart(document.getElementById('repMonthChart'), {
+            type: 'line',
+            data: {
+                labels: d.monthlyStats.map(m => m.month),
+                datasets: [
+                    { label: 'Requests',  data: d.monthlyStats.map(m => m.requests),
+                      borderColor: '#6c63ff', backgroundColor: 'rgba(108,99,255,0.12)',
+                      tension: 0.4, fill: true, pointBackgroundColor: '#6c63ff', pointRadius: 4 },
+                    { label: 'Accepted',  data: d.monthlyStats.map(m => m.completed),
+                      borderColor: '#00d4aa', backgroundColor: 'rgba(0,212,170,0.1)',
+                      tension: 0.4, fill: true, pointBackgroundColor: '#00d4aa', pointRadius: 4 },
+                ]
+            },
+            options: {
+                scales: {
+                    x: { ticks: { color: tc }, grid: { color: gc } },
+                    y: { beginAtZero: true, ticks: { color: tc }, grid: { color: gc } }
+                },
+                plugins: { legend: { labels: { color: tc, font: { size: 11 } } } }
+            }
+        });
+    }
+
+    async function loadLogs() {
+        const res  = await fetch('/api/Admin/logs');
+        if (!res.ok) return;
+        const logs = await res.json();
+
+        document.getElementById('logCount').textContent = logs.length + ' entries';
+
+        if (!logs.length) {
+            document.getElementById('logsTable').innerHTML = '<p style="color:var(--text-muted)">No logs found.</p>';
+            return;
+        }
+
+        let html = `<table class="table table-hover mb-0">
+            <thead><tr>
+                <th>Action</th><th>Details</th><th>Admin</th><th>Date</th>
+            </tr></thead><tbody>`;
+        logs.forEach(l => {
+            html += `<tr>
+                <td><span class="badge-admin-tag">${l.action}</span></td>
+                <td style="color:var(--text-secondary)">${l.details || '—'}</td>
+                <td>${l.adminName}</td>
+                <td style="color:var(--text-muted);font-size:0.8rem">${new Date(l.createdAt).toLocaleString()}</td>
+            </tr>`;
+        });
+        html += '</tbody></table>';
+        document.getElementById('logsTable').innerHTML = html;
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        await loadReports();
+        await loadLogs();
+    });
+</script>
+}

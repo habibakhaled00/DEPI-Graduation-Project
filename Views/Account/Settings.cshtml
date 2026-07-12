@@ -1,29 +1,166 @@
-@{ ViewData["Title"] = "Settings"; }
-<div class="container py-4" style="max-width:550px;">
-    <h3 class="mb-4"><i class="bi bi-gear"></i> Profile Settings</h3>
-    <div id="settingsAlert" class="alert d-none"></div>
-    <form id="settingsForm">
-        <div class="row"><div class="col-6 mb-3"><label class="form-label">First Name</label><input class="form-control" id="firstName"></div>
-            <div class="col-6 mb-3"><label class="form-label">Last Name</label><input class="form-control" id="lastName"></div></div>
-        <div class="mb-3"><label class="form-label">Bio</label><textarea class="form-control" id="bio" rows="3"></textarea></div>
-        <div class="mb-3"><label class="form-label">Address</label><input class="form-control" id="address"></div>
-        <div class="mb-3"><label class="form-label">Phone</label><input class="form-control" id="phone"></div>
-        <button type="submit" class="btn btn-primary w-100">Save Changes</button>
-    </form>
+@{
+    ViewData["Title"] = "Settings";
+}
+
+<style>
+    body > main {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
+    .login-wrapper {
+        min-height: calc(100vh - 80px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        background: transparent !important;
+        padding: 2rem;
+        width: 100%;
+    }
+
+    .auth-card {
+        width: 100%;
+        max-width: 580px;
+        position: relative;
+        z-index: 1;
+        animation: slideUp 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+        background: var(--bg-card) !important;
+        border: 1px solid var(--border) !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+        border-radius: var(--radius) !important;
+        padding: 3rem 2.5rem;
+        box-shadow: var(--shadow-sm) !important;
+    }
+
+    @@keyframes slideUp {
+        from { opacity: 0; transform: translateY(25px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-title { font-size: 1.6rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.3rem; }
+    .form-sub   { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 2rem; }
+</style>
+
+<div class="login-wrapper">
+    <div class="auth-card">
+        <h1 class="form-title">
+            <i class="bi bi-gear-fill me-2" style="color: var(--accent);"></i>Profile Settings
+        </h1>
+        <p class="form-sub">Update your public profile details and contact coordinates</p>
+
+        <div id="settingsAlert" class="alert d-none mb-3"></div>
+
+        <form id="settingsForm">
+            <div class="row">
+                <div class="col-6 mb-3">
+                    <label class="form-label" style="font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary);">First Name</label>
+                    <input type="text" class="form-control" id="firstName" required maxlength="50">
+                </div>
+                <div class="col-6 mb-3">
+                    <label class="form-label" style="font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary);">Last Name</label>
+                    <input type="text" class="form-control" id="lastName" required maxlength="50">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" style="font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary);">Bio</label>
+                <textarea class="form-control" id="bio" rows="3" maxlength="500" placeholder="Tell neighbors a bit about yourself..."></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" style="font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary);">Address</label>
+                <input type="text" class="form-control" id="address" maxlength="200" placeholder="e.g. 12 Nile St, Cairo">
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label" style="font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary);">Phone</label>
+                <input type="text" class="form-control" id="phone" placeholder="e.g. +20123456789">
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-2.5" id="saveBtn"
+                    style="background: var(--accent); border-color: var(--accent); font-weight: 600; border-radius: var(--radius-sm);">
+                Save Changes
+            </button>
+        </form>
+    </div>
 </div>
+
 @section Scripts {
-<script>
-async function load(){const res=await fetch('/api/UserProfile');if(!res.ok)return;const p=await res.json();
-    document.getElementById('firstName').value=p.fullName.split(' ')[0]||'';
-    document.getElementById('lastName').value=p.fullName.split(' ').slice(1).join(' ')||'';
-    document.getElementById('address').value=p.address||'';}
-document.getElementById('settingsForm').addEventListener('submit',async(e)=>{
-    e.preventDefault();const alert=document.getElementById('settingsAlert');
-    const res=await fetch('/api/UserProfile',{method:'PUT',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({firstName:document.getElementById('firstName').value,lastName:document.getElementById('lastName').value,
-            bio:document.getElementById('bio').value,address:document.getElementById('address').value,phoneNumber:document.getElementById('phone').value})});
-    if(res.ok){alert.className='alert alert-success';alert.textContent='Profile updated!';}
-    else{alert.className='alert alert-danger';alert.textContent='Failed to update.';}
-});
-document.addEventListener('DOMContentLoaded',load);
-</script>}
+    <script>
+        async function load() {
+            try {
+                const res = await fetch('/api/UserProfile');
+                if (!res.ok) return;
+                const p = await res.json();
+                
+                document.getElementById('firstName').value = p.fullName.split(' ')[0] || '';
+                document.getElementById('lastName').value = p.fullName.split(' ').slice(1).join(' ') || '';
+                document.getElementById('address').value = p.address || '';
+                document.getElementById('bio').value = p.bio || '';
+                document.getElementById('phone').value = p.phoneNumber || '';
+            } catch (err) {
+                console.error("Failed to load user profile", err);
+            }
+        }
+
+        document.getElementById('settingsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const alertBox = document.getElementById('settingsAlert');
+            const saveBtn = document.getElementById('saveBtn');
+            alertBox.classList.add('d-none');
+            
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Saving...`;
+
+            const phoneVal = document.getElementById('phone').value.trim();
+            const bioVal = document.getElementById('bio').value.trim();
+            const addressVal = document.getElementById('address').value.trim();
+
+            const payload = {
+                firstName: document.getElementById('firstName').value.trim(),
+                lastName: document.getElementById('lastName').value.trim(),
+                bio: bioVal === "" ? null : bioVal,
+                address: addressVal === "" ? null : addressVal,
+                phoneNumber: phoneVal === "" ? null : phoneVal
+            };
+
+            try {
+                const res = await fetch('/api/UserProfile', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    alertBox.className = 'alert alert-success';
+                    alertBox.textContent = 'Profile updated!';
+                    alertBox.classList.remove('d-none');
+                } else {
+                    let errMsg = 'Failed to update.';
+                    try {
+                        const errObj = await res.json();
+                        errMsg = errObj.message || errMsg;
+                    } catch (_) {
+                        errMsg = await res.text() || errMsg;
+                    }
+                    alertBox.className = 'alert alert-danger';
+                    alertBox.textContent = errMsg;
+                    alertBox.classList.remove('d-none');
+                }
+            } catch (err) {
+                alertBox.className = 'alert alert-danger';
+                alertBox.textContent = 'Network error. Please try again.';
+                alertBox.classList.remove('d-none');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save Changes';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', load);
+    </script>
+}

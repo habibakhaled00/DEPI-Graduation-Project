@@ -1,38 +1,205 @@
-@{ ViewData["Title"] = "Register"; }
-<div class="container py-4" style="max-width:500px;">
-    <div class="card shadow-sm">
-        <div class="card-body p-4">
-            <div class="text-center mb-4">
-                <i class="bi bi-person-plus-fill display-4 text-primary"></i>
-                <h3>Create Account</h3>
-            </div>
-            <div id="regAlert" class="alert alert-danger d-none"></div>
-            <form id="regForm">
-                <div class="row">
-                    <div class="col-6 mb-3"><label class="form-label">First Name</label><input type="text" class="form-control" id="firstName" required></div>
-                    <div class="col-6 mb-3"><label class="form-label">Last Name</label><input type="text" class="form-control" id="lastName" required></div>
-                </div>
-                <div class="mb-3"><label class="form-label">Email</label><input type="email" class="form-control" id="email" required></div>
-                <div class="mb-3"><label class="form-label">Password (min 6 chars)</label><input type="password" class="form-control" id="password" required minlength="6"></div>
-                <button type="submit" class="btn btn-primary w-100 mb-3" id="regBtn">Register</button>
-                <p class="text-center text-muted">Already have an account? <a href="/Account/Login">Login</a></p>
-            </form>
+@{
+    ViewData["Title"] = "Join NeighborHelp";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    body > main {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
+    .register-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        background: transparent !important;
+        padding: 2rem;
+        width: 100%;
+    }
+
+    .auth-card {
+        width: 100%;
+        max-width: 480px;
+        position: relative;
+        z-index: 1;
+        animation: slideUp 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+        background: var(--bg-card) !important;
+        border: 1px solid var(--border) !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+        border-radius: var(--radius) !important;
+        padding: 3rem 2.5rem;
+        box-shadow: var(--shadow-sm) !important;
+    }
+
+    @@keyframes slideUp {
+        from { opacity: 0; transform: translateY(25px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .brand-mark {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        margin-bottom: 2rem;
+    }
+    .brand-mark-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        color: #fff;
+        box-shadow: 0 6px 20px var(--accent-glow);
+    }
+    .brand-mark-text { font-size: 1.4rem; font-weight: 800; color: var(--text-primary); }
+
+    .form-title { font-size: 1.75rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.3rem; text-align: center; }
+    .form-sub   { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; text-align: center; }
+
+    /* Strength bar */
+    #pwStrength { height:4px; border-radius:999px; background:var(--border); overflow:hidden; margin-top:0.5rem; }
+    #pwStrengthBar { height:100%; width:0; transition:width 0.3s,background 0.3s; border-radius:999px; }
+</style>
+
+<div class="register-wrapper">
+    <div class="auth-card">
+        <div class="brand-mark">
+            <div class="brand-mark-icon"><i class="bi bi-people-fill"></i></div>
+            <span class="brand-mark-text">NeighborHelp</span>
         </div>
+
+        <h1 class="form-title">Join the community 🌍</h1>
+        <p class="form-sub">Create your free account and start helping today</p>
+
+        <div id="regAlert" class="alert alert-danger d-none mb-3" role="alert"></div>
+
+        <form id="regForm" novalidate>
+            <div class="row g-3 mb-3">
+                <div class="col-6">
+                    <label class="form-label" for="regFirstName">First Name</label>
+                    <input type="text" class="form-control" id="regFirstName" placeholder="John" required autocomplete="given-name">
+                </div>
+                <div class="col-6">
+                    <label class="form-label" for="regLastName">Last Name</label>
+                    <input type="text" class="form-control" id="regLastName" placeholder="Doe" required autocomplete="family-name">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="regEmail">Email Address</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                    <input type="email" class="form-control" id="regEmail" placeholder="you@@example.com" required autocomplete="email">
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label" for="regPassword">Password</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                    <input type="password" class="form-control" id="regPassword" placeholder="Min. 6 characters" required minlength="6" autocomplete="new-password">
+                    <button type="button" class="input-group-text" id="regTogglePwd" style="cursor:pointer" tabindex="-1">
+                        <i class="bi bi-eye" id="regToggleIcon"></i>
+                    </button>
+                </div>
+                <div id="pwStrength"><div id="pwStrengthBar"></div></div>
+                <small id="pwStrengthLabel" class="text-muted" style="font-size:0.72rem"></small>
+            </div>
+
+            <button type="submit" class="btn-nh-primary" id="regBtn">
+                <span id="regBtnText"><i class="bi bi-person-check me-2"></i>Create My Account</span>
+                <span id="regBtnSpinner" class="d-none">
+                    <span class="spinner-border spinner-border-sm me-2"></span>Creating…
+                </span>
+            </button>
+        </form>
+
+        <hr class="nh-divider">
+
+        <p class="text-center mb-0" style="font-size:0.875rem;color:var(--text-muted)">
+            Already have an account?
+            <a href="/Account/Login" style="font-weight:700;color:var(--accent)">Sign in →</a>
+        </p>
     </div>
 </div>
+
 @section Scripts {
 <script>
-document.getElementById('regForm').addEventListener('submit', async(e)=>{
-    e.preventDefault();
-    const btn=document.getElementById('regBtn');const alert=document.getElementById('regAlert');
-    alert.classList.add('d-none'); btn.disabled=true; btn.textContent='Creating...';
-    try{
-        const res=await fetch('/api/Auth/register',{method:'POST',headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({firstName:document.getElementById('firstName').value,lastName:document.getElementById('lastName').value,
-                email:document.getElementById('email').value,password:document.getElementById('password').value})});
-        if(res.ok){window.location.href='/';}
-        else{const d=await res.json();alert.textContent=(d.errors||[]).join(', ')||'Registration failed.';alert.classList.remove('d-none');}
-    }catch{alert.textContent='Network error.';alert.classList.remove('d-none');}
-    btn.disabled=false;btn.textContent='Register';
-});
-</script>}
+    document.getElementById('regTogglePwd').addEventListener('click', function () {
+        const pwd  = document.getElementById('regPassword');
+        const icon = document.getElementById('regToggleIcon');
+        pwd.type   = pwd.type === 'password' ? 'text' : 'password';
+        icon.className = pwd.type === 'password' ? 'bi bi-eye' : 'bi bi-eye-slash';
+    });
+
+    document.getElementById('regPassword').addEventListener('input', function () {
+        const val = this.value;
+        let s = 0;
+        if (val.length >= 6) s++;
+        if (val.length >= 10) s++;
+        if (/[A-Z]/.test(val)) s++;
+        if (/[0-9]/.test(val)) s++;
+        if (/[^A-Za-z0-9]/.test(val)) s++;
+        const pct = (s / 5) * 100;
+        const colors = ['#ff6b6b','#ffaa00','#ffaa00','#00d4aa','#6c63ff'];
+        const labels = ['','Weak','Fair','Good','Strong','Very Strong'];
+        document.getElementById('pwStrengthBar').style.width = pct + '%';
+        document.getElementById('pwStrengthBar').style.background = colors[s-1] || 'transparent';
+        document.getElementById('pwStrengthLabel').textContent = labels[s] || '';
+    });
+
+    document.getElementById('regForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const alertEl = document.getElementById('regAlert');
+        const btn     = document.getElementById('regBtn');
+        const btnText = document.getElementById('regBtnText');
+        const spinner = document.getElementById('regBtnSpinner');
+
+        alertEl.classList.add('d-none');
+        btn.disabled = true;
+        btnText.classList.add('d-none');
+        spinner.classList.remove('d-none');
+
+        try {
+            const res = await fetch('/api/Auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    firstName: document.getElementById('regFirstName').value.trim(),
+                    lastName:  document.getElementById('regLastName').value.trim(),
+                    email:     document.getElementById('regEmail').value.trim(),
+                    password:  document.getElementById('regPassword').value
+                })
+            });
+
+            if (res.ok) {
+                window.location.href = '/HelpRequests';
+            } else {
+                let msg = 'Registration failed. Please try again.';
+                try { const d = await res.json(); msg = (d.errors || []).join(' ') || d.message || msg; } catch (_) {}
+                alertEl.textContent = msg;
+                alertEl.classList.remove('d-none');
+                btn.disabled = false;
+                btnText.classList.remove('d-none');
+                spinner.classList.add('d-none');
+            }
+        } catch {
+            alertEl.textContent = 'Network error. Please try again.';
+            alertEl.classList.remove('d-none');
+            btn.disabled = false;
+            btnText.classList.remove('d-none');
+            spinner.classList.add('d-none');
+        }
+    });
+</script>
+}

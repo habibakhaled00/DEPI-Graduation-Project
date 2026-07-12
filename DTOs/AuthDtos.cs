@@ -65,6 +65,7 @@ namespace NeighborHelp.DTOs
         public string Email { get; set; } = "";
         public string? Bio { get; set; }
         public string? Address { get; set; }
+        public string? PhoneNumber { get; set; }
         public DateTime JoinedDate { get; set; }
         public double AverageRating { get; set; }
         public int RequestsPosted { get; set; }

@@ -3,61 +3,100 @@
     var categories = ViewBag.Categories as List<NeighborHelp.Models.Category>;
 }
 
-<div class="container py-4" style="max-width: 700px;">
-    <h2 class="mb-4">Submit a Help Request</h2>
+<style>
+    body > main {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+    }
 
-    <form id="createRequestForm">
-        <div class="mb-3">
-            <label class="form-label">Title</label>
-            <input type="text" class="form-control" id="title" required maxlength="150"
-                   placeholder="e.g. Need help moving a couch">
-        </div>
+    .login-wrapper {
+        min-height: calc(100vh - 80px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        background: transparent !important;
+        padding: 2rem;
+        width: 100%;
+    }
 
-        <div class="mb-3">
-            <label class="form-label">Category</label>
-            <select class="form-select" id="categoryId" required>
-                <option value="">-- Select Category --</option>
-                @if (categories != null)
-                {
-                    foreach (var c in categories)
+    .auth-card {
+        width: 100%;
+        max-width: 620px;
+        position: relative;
+        z-index: 1;
+        animation: slideUp 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+        background: var(--bg-card) !important;
+        border: 1px solid var(--border) !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+        border-radius: var(--radius) !important;
+        padding: 3rem 2.5rem;
+        box-shadow: var(--shadow-sm) !important;
+    }
+
+    @@keyframes slideUp {
+        from { opacity: 0; transform: translateY(25px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-title { font-size: 1.6rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.3rem; }
+    .form-sub   { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 2rem; }
+</style>
+
+<div class="login-wrapper">
+    <div class="auth-card">
+        <h1 class="form-title">
+            <i class="bi bi-pencil-square me-2" style="color: var(--accent);"></i>Submit a Help Request
+        </h1>
+        <p class="form-sub">Post your request so neighbors nearby can offer to volunteer</p>
+
+        <form id="createRequestForm">
+            <div class="mb-3">
+                <label class="form-label" style="font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary);">Title</label>
+                <input type="text" class="form-control" id="title" required maxlength="150"
+                       placeholder="e.g. Need help moving a couch">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" style="font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary);">Category</label>
+                <select class="form-select" id="categoryId" required>
+                    <option value="">-- Select Category --</option>
+                    @if (categories != null)
                     {
-                        <option value="@c.CategoryId">@c.Name</option>
+                        foreach (var c in categories)
+                        {
+                            <option value="@c.CategoryId">@c.Name</option>
+                        }
                     }
-                }
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Description</label>
-            <textarea class="form-control" id="description" rows="4" required maxlength="2000"
-                      placeholder="Describe what you need help with..."></textarea>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Address</label>
-            <input type="text" class="form-control" id="address" required maxlength="300"
-                   placeholder="e.g. 12 Nile St, Cairo">
-        </div>
-
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <label class="form-label">Latitude (optional)</label>
-                <input type="number" step="any" class="form-control" id="latitude">
+                </select>
             </div>
-            <div class="col-md-6">
-                <label class="form-label">Longitude (optional)</label>
-                <input type="number" step="any" class="form-control" id="longitude">
+
+            <div class="mb-3">
+                <label class="form-label" style="font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary);">Description</label>
+                <textarea class="form-control" id="description" rows="4" required maxlength="2000"
+                          placeholder="Describe what you need help with..."></textarea>
             </div>
-        </div>
 
-        <button type="button" class="btn btn-outline-secondary mb-3" id="useLocationBtn">
-            <i class="bi bi-geo"></i> Use My Current Location
-        </button>
+            <div class="mb-4">
+                <label class="form-label" style="font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary);">Address</label>
+                <input type="text" class="form-control" id="address" required maxlength="300"
+                       placeholder="e.g. 12 Nile St, Cairo">
+            </div>
 
-        <div id="formAlert" class="alert alert-danger d-none"></div>
+            <input type="hidden" id="latitude" value="">
+            <input type="hidden" id="longitude" value="">
 
-        <button type="submit" class="btn btn-primary w-100" id="submitBtn">Submit Request</button>
-    </form>
+            <div id="formAlert" class="alert alert-danger d-none mb-3"></div>
+
+            <button type="submit" class="btn btn-primary w-100 py-2.5" id="submitBtn" 
+                    style="background: var(--accent); border-color: var(--accent); font-weight: 600; border-radius: var(--radius-sm);">
+                Submit Request
+            </button>
+        </form>
+    </div>
 </div>
 
 @section Scripts {

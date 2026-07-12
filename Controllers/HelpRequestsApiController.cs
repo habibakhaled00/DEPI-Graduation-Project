@@ -67,7 +67,7 @@ namespace NeighborHelp.Controllers
                 {
                     RequestId = h.RequestId,
                     UserId = h.UserId,
-                    RequesterName = h.User!.UserName ?? "Unknown",
+                    RequesterName = h.User!.FullName ?? "Unknown",
                     CategoryId = h.CategoryId,
                     CategoryName = h.Category!.Name,
                     Title = h.Title,
@@ -127,7 +127,7 @@ namespace NeighborHelp.Controllers
             {
                 RequestId = h.RequestId,
                 UserId = h.UserId,
-                RequesterName = h.User!.UserName ?? "Unknown",
+                RequesterName = h.User!.FullName ?? "Unknown",
                 CategoryId = h.CategoryId,
                 CategoryName = h.Category!.Name,
                 Title = h.Title,

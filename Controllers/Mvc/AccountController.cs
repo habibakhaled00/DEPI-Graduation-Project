@@ -7,7 +7,16 @@ namespace NeighborHelp.Controllers.Mvc
     public class AccountController : Controller
     {
         [HttpGet("Login")]
-        public IActionResult Login() => View();
+        public IActionResult Login()
+        {
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                if (User.IsInRole("Admin"))
+                    return Redirect("/Admin/Dashboard");
+                return Redirect("/HelpRequests");
+            }
+            return View();
+        }
 
         [HttpGet("Register")]
         public IActionResult Register() => View();

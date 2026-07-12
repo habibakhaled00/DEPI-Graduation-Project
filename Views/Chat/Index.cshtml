@@ -2,22 +2,76 @@
     ViewData["Title"] = "Chat";
     int requestId = ViewBag.RequestId;
     string requestTitle = ViewBag.RequestTitle;
+    bool isOwner = ViewBag.IsOwner ?? false;
 }
 
-<div class="container py-4" style="max-width: 750px;">
-    <a asp-controller="HelpRequests" asp-action="Details" asp-route-id="@requestId" class="btn btn-link ps-0 mb-2">
-        <i class="bi bi-arrow-left"></i> Back to request
+<style>
+    .custom-modal-backdrop {
+        position: fixed; inset: 0;
+        background: rgba(13,15,26,0.82);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        display: flex; align-items: center; justify-content: center;
+        z-index: 9999;
+        animation: fadeInModal 0.25s ease both;
+    }
+    .custom-modal-card {
+        background: var(--bg-card) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: var(--radius) !important;
+        padding: 2rem 2.5rem;
+        max-width: 460px; width: 90%;
+        box-shadow: var(--shadow) !important;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        position: relative;
+    }
+    @@keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
+</style>
+
+<!-- Custom Modal for Confirmation -->
+<div id="confirmModal" class="custom-modal-backdrop" style="display:none;">
+    <div class="custom-modal-card fade-up">
+        <h5 id="confirmModalTitle" style="font-weight:800;font-size:1.2rem;margin-bottom:0.75rem;color:var(--text-primary)">
+            <i class="bi bi-exclamation-triangle-fill me-2" style="color:var(--accent-3)"></i>Cancel Match
+        </h5>
+        <p id="confirmModalBody" style="color:var(--text-secondary);font-size:0.9rem;line-height:1.5;margin-bottom:1.8rem;">
+            Are you sure you want to cancel the match with this volunteer? This will reopen the help request for other volunteers.
+        </p>
+        <div class="d-flex justify-content-end gap-2">
+            <button id="confirmCancelBtn" class="btn btn-outline-secondary btn-sm px-3" style="border-radius:var(--radius-sm)">Keep Volunteer</button>
+            <button id="confirmOkBtn" class="btn btn-danger btn-sm px-3" style="border-radius:var(--radius-sm)">Cancel Match</button>
+        </div>
+    </div>
+</div>
+
+<div class="container py-4 fade-up" style="max-width: 750px;">
+    <a asp-controller="HelpRequests" asp-action="Details" asp-route-id="@requestId" 
+       class="btn btn-link ps-0 mb-3" style="color: var(--accent); font-weight: 500; font-size: 0.9rem; text-decoration: none;">
+        <i class="bi bi-arrow-left me-1"></i>Back to request
     </a>
-    <h2 class="mb-1"><i class="bi bi-chat-dots"></i> Chat</h2>
-    <p class="text-muted mb-3">@requestTitle</p>
 
-    <div id="connectionStatus" class="alert alert-warning py-2 small">Connecting...</div>
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="mb-1" style="font-weight: 800; font-size: 1.6rem;"><i class="bi bi-chat-dots-fill me-2" style="color: var(--accent);"></i>Chatroom</h2>
+            <p class="text-muted mb-0" style="font-size: 0.9rem;">Discussing request "<span style="color: var(--text-primary);">@requestTitle</span>"</p>
+        </div>
+        @if (isOwner)
+        {
+            <button id="cancelMatchBtn" class="btn btn-danger btn-sm px-3" style="font-weight: 600; border-radius: var(--radius-sm); font-size: 0.85rem;">
+                <i class="bi bi-x-circle me-1"></i>Cancel Match
+            </button>
+        }
+    </div>
 
-    <div id="chatWindow" class="chat-window mb-3"></div>
+    <div id="connectionStatus" class="alert alert-warning py-2 small" style="border-radius: var(--radius-sm);">Connecting...</div>
+
+    <div id="chatWindow" class="chat-window mb-3 nh-card" style="min-height: 400px; max-height: 500px; overflow-y: auto; padding: 1.5rem; background: var(--bg-card); border: 1px solid var(--border);"></div>
 
     <form id="chatForm" class="d-flex gap-2">
-        <input type="text" id="messageInput" class="form-control" placeholder="Type a message..." autocomplete="off" maxlength="1000" disabled>
-        <button type="submit" class="btn btn-primary" id="sendBtn" disabled>
+        <input type="text" id="messageInput" class="form-control" placeholder="Type a message..." autocomplete="off" maxlength="1000" disabled style="border-radius: var(--radius-sm);">
+        <button type="submit" class="btn btn-primary px-3" id="sendBtn" disabled style="border-radius: var(--radius-sm); background: var(--accent); border-color: var(--accent);">
             <i class="bi bi-send"></i>
         </button>
     </form>
@@ -27,6 +81,7 @@
     <script>
         const requestId = @requestId;
         const CurrentUID = "@(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value)";
+        const isOwner = @(isOwner ? "true" : "false");
     </script>
     <script src="~/js/chat.js" asp-append-version="true"></script>
 }

@@ -91,7 +91,7 @@ function renderRequests(requests) {
             actionBtn.disabled = true;
             actionBtn.innerHTML = `<i class="bi bi-x-circle"></i> Rejected`;
             actionBtn.classList.replace("btn-success", "btn-outline-danger");
-        } else if (r.status !== "Open") {
+        } else if (r.status !== "Open" && r.status !== "Pending") {
             actionBtn.disabled = true;
             actionBtn.innerHTML = `<i class="bi bi-lock"></i> Unavailable`;
             actionBtn.classList.replace("btn-success", "btn-outline-secondary");
@@ -99,19 +99,24 @@ function renderRequests(requests) {
             actionBtn.addEventListener("click", () => volunteerFor(r.requestId, actionBtn));
         }
 
+        const cardEl = node.querySelector('.nh-card, [class*="card"]') || node.firstElementChild;
+        if (cardEl) {
+            cardEl.style.animationDelay = `${requests.indexOf(r) * 60}ms`;
+            cardEl.classList.add('fade-up');
+        }
         container.appendChild(node);
     });
 }
 
 function statusClasses(status) {
-    switch (status) {
-        case "Open": return ["bg-success"];
-        case "Pending": return ["bg-warning", "text-dark"];
-        case "Accepted": return ["bg-primary"];
-        case "Completed": return ["bg-secondary"];
-        case "Cancelled": return ["bg-danger"];
-        default: return ["bg-light", "text-dark"];
-    }
+    const map = {
+        'Open':      ['status-badge', 'status-open'],
+        'Pending':   ['status-badge', 'status-pending'],
+        'Accepted':  ['status-badge', 'status-accepted'],
+        'Completed': ['status-badge', 'status-completed'],
+        'Cancelled': ['status-badge', 'status-accepted'], // re-use style
+    };
+    return map[status] || ['status-badge', 'status-pending'];
 }
 
 async function volunteerFor(requestId, btn) {
@@ -125,13 +130,22 @@ async function volunteerFor(requestId, btn) {
         });
 
         if (res.ok) {
-            btn.innerHTML = `<i class="bi bi-check-circle"></i> Applied`;
-            btn.classList.replace("btn-success", "btn-outline-success");
+            btn.innerHTML = `<i class="bi bi-hourglass-split"></i> Pending`;
+            btn.classList.replace("btn-success", "btn-outline-secondary");
+            btn.disabled = true;
+            if (window.nhToast) window.nhToast("You have volunteered for this request!");
+            setTimeout(loadRequests, 1200);
         } else if (res.status === 401) {
-            window.location.href = "/Identity/Account/Login";
+            window.location.href = "/Account/Login";
         } else {
-            const errorText = await res.text();
-            alert(errorText || "Could not apply.");
+            let errorText = "Could not apply.";
+            try {
+                const errObj = await res.json();
+                errorText = errObj.message || errorText;
+            } catch {
+                try { errorText = await res.text() || errorText; } catch {}
+            }
+            if (window.nhToast) window.nhToast(errorText, "error");
             btn.disabled = false;
             btn.innerHTML = `<i class="bi bi-hand-thumbs-up"></i> Volunteer`;
         }

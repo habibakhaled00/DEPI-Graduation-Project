@@ -19,11 +19,18 @@ function renderApplicants(applicants) {
     container.innerHTML = "";
 
     if (applicants.length === 0) {
-        container.innerHTML = `<p class="text-muted text-center py-4">No one has applied yet.</p>`;
+        container.innerHTML = `
+            <div class="nh-card text-center py-5 no-hover">
+                <i class="bi bi-people fs-1 d-block mb-3 style="color: var(--text-muted);"></i>
+                <h5 style="color: var(--text-primary);">No applicants yet</h5>
+                <p class="mb-0 text-muted" style="font-size: 0.875rem;">Applications will appear here once neighbors volunteer.</p>
+            </div>`;
         return;
     }
 
-    applicants.forEach(a => {
+    const hasAnyAccepted = applicants.some(a => a.status === "Accepted");
+
+    applicants.forEach((a, idx) => {
         const node = template.content.cloneNode(true);
         node.querySelector(".applicant-name").textContent = a.userName;
         node.querySelector(".applicant-date").textContent = `Applied ${new Date(a.appliedDate).toLocaleString()}`;
@@ -34,57 +41,134 @@ function renderApplicants(applicants) {
 
         const actions = node.querySelector(".applicant-actions");
         if (a.status !== "Pending") {
-            actions.innerHTML = `<span class="text-muted small fst-italic">No actions available</span>`;
+            actions.innerHTML = `<span class="text-muted small fst-italic" style="font-size: 0.8rem; opacity: 0.7;">${a.status}</span>`;
+            actions.style.background = "transparent";
+            actions.style.border = "none";
         } else {
-            node.querySelector(".accept-btn").addEventListener("click", (e) => acceptVolunteer(a.volunteerId, e.target));
-            node.querySelector(".reject-btn").addEventListener("click", (e) => rejectVolunteer(a.volunteerId, e.target));
+            const acceptBtn = node.querySelector(".accept-btn");
+            const rejectBtn = node.querySelector(".reject-btn");
+
+            if (hasAnyAccepted) {
+                acceptBtn.disabled = true;
+                acceptBtn.classList.replace("btn-success", "btn-outline-secondary");
+                acceptBtn.title = "Cancel the active volunteer match first to accept another candidate.";
+            } else {
+                acceptBtn.addEventListener("click", (e) => acceptVolunteer(a.volunteerId, e.currentTarget));
+            }
+            
+            rejectBtn.addEventListener("click", (e) => rejectVolunteer(a.volunteerId, e.currentTarget));
+        }
+
+        const cardEl = node.querySelector(".nh-card");
+        if (cardEl) {
+            cardEl.style.animationDelay = `${idx * 70}ms`;
         }
 
         container.appendChild(node);
     });
+
+    if (window.initStagger) window.initStagger();
 }
 
 function statusClasses(status) {
-    switch (status) {
-        case "Pending": return ["bg-warning", "text-dark"];
-        case "Accepted": return ["bg-success"];
-        case "Rejected": return ["bg-danger"];
-        default: return ["bg-light", "text-dark"];
-    }
+    const map = {
+        'Pending':   ['status-badge', 'status-pending'],
+        'Accepted':  ['status-badge', 'status-accepted'],
+        'Rejected':  ['status-badge', 'status-completed'], // re-use badge
+    };
+    return map[status] || ['status-badge', 'status-pending'];
 }
 
-async function acceptVolunteer(volunteerId, btn) {
-    if (!confirm("Accept this volunteer? Other pending applicants will be automatically rejected.")) return;
-    btn.disabled = true;
-    try {
-        const res = await fetch(`/api/Volunteer/accept/${volunteerId}`, { method: "PUT" });
-        if (res.ok) {
-            await loadApplicants();
-        } else {
-            alert(await res.text());
-            btn.disabled = false;
-        }
-    } catch {
-        alert("Network error.");
-        btn.disabled = false;
+function showConfirm(title, message, onConfirm) {
+    const modal = document.getElementById("confirmModal");
+    if (!modal) {
+        if (confirm(message)) onConfirm();
+        return;
     }
+
+    document.getElementById("confirmModalTitle").innerHTML = 
+        `<i class="bi bi-exclamation-triangle-fill me-2" style="color:var(--accent-3)"></i>${title}`;
+    document.getElementById("confirmModalBody").textContent = message;
+
+    const okBtn = document.getElementById("confirmOkBtn");
+    const cancelBtn = document.getElementById("confirmCancelBtn");
+
+    const cleanup = () => {
+        modal.style.display = "none";
+        okBtn.removeEventListener("click", onOk);
+        cancelBtn.removeEventListener("click", onCancel);
+    };
+
+    const onOk = () => {
+        cleanup();
+        onConfirm();
+    };
+
+    const onCancel = () => {
+        cleanup();
+    };
+
+    okBtn.addEventListener("click", onOk);
+    cancelBtn.addEventListener("click", onCancel);
+    modal.style.display = "flex";
 }
 
-async function rejectVolunteer(volunteerId, btn) {
-    if (!confirm("Reject this volunteer's application?")) return;
-    btn.disabled = true;
-    try {
-        const res = await fetch(`/api/Volunteer/reject/${volunteerId}`, { method: "PUT" });
-        if (res.ok) {
-            await loadApplicants();
-        } else {
-            alert(await res.text());
-            btn.disabled = false;
+function acceptVolunteer(volunteerId, btn) {
+    showConfirm(
+        "Accept Volunteer?",
+        "Accept this volunteer? Other pending applicants will be automatically rejected.",
+        async () => {
+            btn.disabled = true;
+            const oldText = btn.innerHTML;
+            btn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Processing...`;
+
+            try {
+                const res = await fetch(`/api/Volunteer/accept/${volunteerId}`, { method: "PUT" });
+                if (res.ok) {
+                    if (window.nhToast) window.nhToast("Volunteer accepted successfully!");
+                    await loadApplicants();
+                } else {
+                    const errText = await res.text() || "Could not accept volunteer.";
+                    if (window.nhToast) window.nhToast(errText, "error");
+                    btn.disabled = false;
+                    btn.innerHTML = oldText;
+                }
+            } catch {
+                if (window.nhToast) window.nhToast("Network error. Please try again.", "error");
+                btn.disabled = false;
+                btn.innerHTML = oldText;
+            }
         }
-    } catch {
-        alert("Network error.");
-        btn.disabled = false;
-    }
+    );
+}
+
+function rejectVolunteer(volunteerId, btn) {
+    showConfirm(
+        "Reject Application?",
+        "Reject this volunteer's application?",
+        async () => {
+            btn.disabled = true;
+            const oldText = btn.innerHTML;
+            btn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Processing...`;
+
+            try {
+                const res = await fetch(`/api/Volunteer/reject/${volunteerId}`, { method: "PUT" });
+                if (res.ok) {
+                    if (window.nhToast) window.nhToast("Volunteer declined.");
+                    await loadApplicants();
+                } else {
+                    const errText = await res.text() || "Could not decline volunteer.";
+                    if (window.nhToast) window.nhToast(errText, "error");
+                    btn.disabled = false;
+                    btn.innerHTML = oldText;
+                }
+            } catch {
+                if (window.nhToast) window.nhToast("Network error. Please try again.", "error");
+                btn.disabled = false;
+                btn.innerHTML = oldText;
+            }
+        }
+    );
 }
 
 document.addEventListener("DOMContentLoaded", loadApplicants);

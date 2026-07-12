@@ -1,4 +1,5 @@
 wwwroot\css\site.css
+wwwroot\js\animations.js
 wwwroot\js\chat.js
 wwwroot\js\createRequest.js
 wwwroot\js\manageVolunteers.js

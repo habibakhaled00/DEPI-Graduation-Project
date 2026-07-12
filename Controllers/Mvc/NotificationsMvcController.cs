@@ -8,6 +8,6 @@ namespace NeighborHelp.Controllers.Mvc
     public class NotificationsMvcController : Controller
     {
         [HttpGet("")]
-        public IActionResult Index() => View();
+        public IActionResult Index() => View("~/Views/Notifications/Index.cshtml");
     }
 }

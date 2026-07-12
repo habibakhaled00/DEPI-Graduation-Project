@@ -4,30 +4,99 @@
     string requestTitle = ViewBag.RequestTitle;
 }
 
-<div class="container py-4" style="max-width: 800px;">
-    <a asp-controller="HelpRequests" asp-action="Details" asp-route-id="@requestId" class="btn btn-link ps-0 mb-2">
-        <i class="bi bi-arrow-left"></i> Back to request
-    </a>
-    <h2 class="mb-1">Manage Volunteers</h2>
-    <p class="text-muted mb-4">@requestTitle</p>
+<style>
+    .custom-modal-backdrop {
+        position: fixed; inset: 0;
+        background: rgba(13,15,26,0.82);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        display: flex; align-items: center; justify-content: center;
+        z-index: 9999;
+        animation: fadeInModal 0.25s ease both;
+    }
+    .custom-modal-card {
+        background: var(--bg-card) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: var(--radius) !important;
+        padding: 2rem 2.5rem;
+        max-width: 460px; width: 90%;
+        box-shadow: var(--shadow) !important;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        position: relative;
+    }
+    @@keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
+</style>
 
-    <div id="applicantsContainer" class="list-group">
-        <div class="text-center py-5">
-            <div class="spinner-border text-primary"></div>
+<!-- Custom Modal for Confirmation -->
+<div id="confirmModal" class="custom-modal-backdrop" style="display:none;">
+    <div class="custom-modal-card fade-up">
+        <h5 id="confirmModalTitle" style="font-weight:800;font-size:1.2rem;margin-bottom:0.75rem;color:var(--text-primary)">
+            <i class="bi bi-exclamation-triangle-fill me-2" style="color:var(--accent-3)"></i>Confirm Action
+        </h5>
+        <p id="confirmModalBody" style="color:var(--text-secondary);font-size:0.9rem;line-height:1.5;margin-bottom:1.8rem;">
+            Are you sure you want to proceed?
+        </p>
+        <div class="d-flex justify-content-end gap-2">
+            <button id="confirmCancelBtn" class="btn btn-outline-secondary btn-sm px-3" style="border-radius:var(--radius-sm)">Cancel</button>
+            <button id="confirmOkBtn" class="btn btn-primary btn-sm px-3" style="border-radius:var(--radius-sm);background:var(--accent);border-color:var(--accent)">Confirm</button>
         </div>
     </div>
 </div>
 
-<template id="applicantRowTemplate">
-    <div class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <div>
-            <h6 class="mb-1 applicant-name"></h6>
-            <small class="text-muted applicant-date"></small>
-            <span class="badge ms-2 applicant-status"></span>
+<div class="container py-4 fade-up" style="max-width: 800px;">
+    
+    <!-- Navigation Back Link -->
+    <a asp-controller="HelpRequests" asp-action="Details" asp-route-id="@requestId" 
+       class="btn btn-link ps-0 mb-3" style="color: var(--accent); font-weight: 500; font-size: 0.9rem; text-decoration: none;">
+        <i class="bi bi-arrow-left me-1"></i>Back to request
+    </a>
+
+    <!-- Hero Header section -->
+    <div class="nh-card no-hover mb-4 p-4" 
+         style="background: linear-gradient(135deg, rgba(108,99,255,0.12) 0%, rgba(0,212,170,0.06) 100%);
+                border: 1px solid var(--border); border-radius: var(--radius); position: relative; overflow: hidden;">
+        <div style="position: absolute; width: 180px; height: 180px; border-radius: 50%;
+                    background: rgba(108,99,255,0.15); filter: blur(50px); top: -60px; right: -40px; pointer-events: none;"></div>
+        
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2" style="position: relative; z-index: 1;">
+            <div>
+                <h1 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 0.2rem;">
+                    <i class="bi bi-people-fill me-2" style="color: var(--accent);"></i>Manage Volunteers
+                </h1>
+                <p class="mb-0 text-muted" style="font-size: 0.85rem; font-weight: 500;">
+                    Review applicants for "<span style="color: var(--text-primary);">@requestTitle</span>"
+                </p>
+            </div>
         </div>
-        <div class="btn-group applicant-actions">
-            <button class="btn btn-success btn-sm accept-btn"><i class="bi bi-check-lg"></i> Accept</button>
-            <button class="btn btn-outline-danger btn-sm reject-btn"><i class="bi bi-x-lg"></i> Reject</button>
+    </div>
+
+    <!-- Applicants Card List Container -->
+    <div id="applicantsContainer" class="d-flex flex-column gap-3 stagger">
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Card Template -->
+<template id="applicantRowTemplate">
+    <div class="nh-card p-3 d-flex justify-content-between align-items-center flex-wrap gap-3 fade-up">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <i class="bi bi-person-circle fs-5" style="color: var(--text-muted);"></i>
+                <h6 class="mb-0 applicant-name" style="font-weight: 700; color: var(--text-primary); font-size: 0.95rem;"></h6>
+                <span class="applicant-status" style="margin-left: 0.25rem;"></span>
+            </div>
+            <small class="text-muted applicant-date" style="font-size: 0.78rem; display: block; margin-left: 1.6rem;"></small>
+        </div>
+        <div class="btn-group applicant-actions" style="border-radius: var(--radius-sm); overflow: hidden;">
+            <button class="btn btn-success btn-sm accept-btn px-3" style="font-weight: 600; font-size: 0.82rem;">
+                <i class="bi bi-check-lg me-1"></i>Accept
+            </button>
+            <button class="btn btn-outline-danger btn-sm reject-btn px-3" style="font-weight: 600; font-size: 0.82rem;">
+                <i class="bi bi-x-lg me-1"></i>Reject
+            </button>
         </div>
     </div>
 </template>

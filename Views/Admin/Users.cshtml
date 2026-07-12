@@ -1,25 +1,153 @@
-@{ ViewData["Title"] = "User Management"; }
-<div class="container py-4">
-    <div class="d-flex justify-content-between mb-4"><h2><i class="bi bi-people"></i> Users</h2><a href="/Admin/Dashboard" class="btn btn-outline-secondary">Back</a></div>
-    <div class="mb-3"><input type="text" id="searchInput" class="form-control" placeholder="Search users..."></div>
-    <div id="usersTable"></div>
+@{
+    ViewData["Title"] = "User Management";
+}
+
+<div class="container py-4 fade-up">
+
+    <!-- Header -->
+    <div class="page-header mb-4">
+        <div>
+            <h1 class="section-title mb-1">
+                <i class="bi bi-people me-2" style="color:var(--accent)"></i>User Management
+            </h1>
+            <p class="mb-0" style="color:var(--text-muted);font-size:0.85rem">
+                Manage accounts, roles and access
+            </p>
+        </div>
+        <a href="/Admin/Dashboard" class="quick-action-btn" style="width:auto;padding:0.5rem 1rem">
+            <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Search -->
+    <div class="nh-card p-3 mb-3">
+        <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text" id="searchInput" class="form-control"
+                   placeholder="Search by name or email…" autocomplete="off">
+            <button class="btn btn-outline-secondary px-3" id="searchClearBtn" style="display:none" title="Clear">
+                <i class="bi bi-x"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats bar -->
+    <div class="d-flex gap-3 mb-3 flex-wrap" id="userStats">
+        <span id="statTotal"  style="font-size:0.82rem;color:var(--text-muted)">Loading…</span>
+        <span id="statActive" style="font-size:0.82rem;color:var(--badge-open-text)"></span>
+        <span id="statInact"  style="font-size:0.82rem;color:var(--accent-3)"></span>
+    </div>
+
+    <!-- Table -->
+    <div class="nh-card" style="overflow:hidden">
+        <div class="table-responsive" id="usersTable">
+            <div class="text-center py-5">
+                <div class="spinner-border" role="status"></div>
+            </div>
+        </div>
+    </div>
 </div>
+
 @section Scripts {
 <script>
-let debounce;
-document.getElementById('searchInput').addEventListener('input',(e)=>{clearTimeout(debounce);debounce=setTimeout(()=>loadUsers(e.target.value),300);});
-async function loadUsers(search=''){
-    const url=search?`/api/Admin/users?search=${encodeURIComponent(search)}`:'/api/Admin/users';
-    const res=await fetch(url);const users=await res.json();
-    let html='<table class="table table-hover"><thead class="table-dark"><tr><th>Name</th><th>Email</th><th>Joined</th><th>Roles</th><th>Status</th><th>Action</th></tr></thead><tbody>';
-    users.forEach(u=>{html+=`<tr><td>${u.fullName}</td><td>${u.email}</td><td>${new Date(u.joinedDate).toLocaleDateString()}</td><td>${u.roles.join(', ')}</td>
-        <td><span class="badge ${u.isActive?'bg-success':'bg-danger'}">${u.isActive?'Active':'Inactive'}</span></td>
-        <td><button class="btn btn-sm ${u.isActive?'btn-outline-danger':'btn-outline-success'}" onclick="toggleUser('${u.userId}')">${u.isActive?'Deactivate':'Activate'}</button></td></tr>`;});
-    html+='</tbody></table>';document.getElementById('usersTable').innerHTML=html;
+    let allUsers = [];
+    let debounceTimer;
+
+    document.getElementById('searchInput').addEventListener('input', function (e) {
+        const val = e.target.value.trim();
+        document.getElementById('searchClearBtn').style.display = val ? '' : 'none';
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => loadUsers(val), 300);
+    });
+
+    document.getElementById('searchClearBtn').addEventListener('click', function () {
+        document.getElementById('searchInput').value = '';
+        this.style.display = 'none';
+        loadUsers('');
+    });
+
+    async function loadUsers(search = '') {
+        const url = search
+            ? `/api/Admin/users?search=${encodeURIComponent(search)}`
+            : '/api/Admin/users';
+
+        document.getElementById('usersTable').innerHTML =
+            '<div class="text-center py-5"><div class="spinner-border" role="status"></div></div>';
+
+        const res  = await fetch(url);
+        const users = await res.json();
+        allUsers = users;
+
+        // Stats
+        const active = users.filter(u => u.isActive).length;
+        document.getElementById('statTotal').textContent  = `${users.length} users`;
+        document.getElementById('statActive').textContent = `${active} active`;
+        document.getElementById('statInact').textContent  = `${users.length - active} inactive`;
+
+        if (!users.length) {
+            document.getElementById('usersTable').innerHTML =
+                '<p class="text-center py-4" style="color:var(--text-muted)">No users found.</p>';
+            return;
+        }
+
+        let html = `<table class="table table-hover mb-0">
+            <thead><tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Joined</th>
+                <th>Roles</th>
+                <th>Status</th>
+                <th style="text-align:center">Action</th>
+            </tr></thead><tbody>`;
+
+        users.forEach(u => {
+            const rolesBadges = u.roles.map(r =>
+                r === 'Admin'
+                    ? `<span class="badge-admin-tag me-1">${r}</span>`
+                    : `<span class="badge-completed me-1">${r}</span>`
+            ).join('');
+
+            const statusBadge = u.isActive
+                ? '<span class="badge-open">Active</span>'
+                : '<span style="background:var(--badge-admin);color:var(--badge-admin-text);padding:0.35em 0.75em;border-radius:999px;font-size:0.72rem;font-weight:600">Inactive</span>';
+
+            const actionBtn = u.isActive
+                ? `<button class="btn btn-outline-danger btn-sm" onclick="toggleUser('${u.userId}', this)">
+                    <i class="bi bi-person-x me-1"></i>Deactivate</button>`
+                : `<button class="btn btn-outline-success btn-sm" onclick="toggleUser('${u.userId}', this)">
+                    <i class="bi bi-person-check me-1"></i>Activate</button>`;
+
+            html += `<tr>
+                <td>
+                    <div class="d-flex align-items-center gap-2">
+                        <div style="width:32px;height:32px;border-radius:50%;
+                             background:linear-gradient(135deg,var(--accent),var(--accent-2));
+                             display:flex;align-items:center;justify-content:center;
+                             font-size:0.75rem;font-weight:700;color:#fff;flex-shrink:0">
+                            ${u.fullName.charAt(0).toUpperCase()}
+                        </div>
+                        <span style="font-weight:500">${u.fullName}</span>
+                    </div>
+                </td>
+                <td style="color:var(--text-secondary)">${u.email}</td>
+                <td style="color:var(--text-muted);font-size:0.82rem">${new Date(u.joinedDate).toLocaleDateString()}</td>
+                <td>${rolesBadges || '—'}</td>
+                <td>${statusBadge}</td>
+                <td style="text-align:center">${actionBtn}</td>
+            </tr>`;
+        });
+
+        html += '</tbody></table>';
+        document.getElementById('usersTable').innerHTML = html;
+    }
+
+    async function toggleUser(id, btn) {
+        if (!confirm('Change this user\'s status?')) return;
+        btn.disabled = true;
+        await fetch(`/api/Admin/users/${id}/toggle-status`, { method: 'PUT' });
+        loadUsers(document.getElementById('searchInput').value.trim());
+    }
+
+    document.addEventListener('DOMContentLoaded', () => loadUsers());
+</script>
 }
-async function toggleUser(id){
-    if(!confirm('Are you sure?'))return;
-    await fetch(`/api/Admin/users/${id}/toggle-status`,{method:'PUT'});loadUsers();
-}
-document.addEventListener('DOMContentLoaded',()=>loadUsers());
-</script>}

@@ -90,6 +90,75 @@ function appendMessage(msg) {
     chatWindow.appendChild(wrapper);
 }
 
+function showConfirm(title, message, onConfirm) {
+    const modal = document.getElementById("confirmModal");
+    if (!modal) {
+        if (confirm(message)) onConfirm();
+        return;
+    }
+
+    document.getElementById("confirmModalBody").textContent = message;
+
+    const okBtn = document.getElementById("confirmOkBtn");
+    const cancelBtn = document.getElementById("confirmCancelBtn");
+
+    const cleanup = () => {
+        modal.style.display = "none";
+        okBtn.removeEventListener("click", onOk);
+        cancelBtn.removeEventListener("click", onCancel);
+    };
+
+    const onOk = () => {
+        cleanup();
+        onConfirm();
+    };
+
+    const onCancel = () => {
+        cleanup();
+    };
+
+    okBtn.addEventListener("click", onOk);
+    cancelBtn.addEventListener("click", onCancel);
+    modal.style.display = "flex";
+}
+
+const cancelBtnEl = document.getElementById("cancelMatchBtn");
+if (cancelBtnEl) {
+    cancelBtnEl.addEventListener("click", () => {
+        showConfirm(
+            "Cancel Match",
+            "Are you sure you want to cancel the match with this volunteer? This will reopen the help request for other volunteers.",
+            async () => {
+                cancelBtnEl.disabled = true;
+                cancelBtnEl.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Cancelling...`;
+
+                try {
+                    const res = await fetch(`/api/Volunteer/cancel-match/${requestId}`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" }
+                    });
+
+                    if (res.ok) {
+                        if (window.nhToast) window.nhToast("Match cancelled successfully.");
+                        setTimeout(() => {
+                            window.location.href = `/HelpRequests/Details/${requestId}`;
+                        }, 1200);
+                    } else {
+                        const err = await res.text() || "Failed to cancel match.";
+                        if (window.nhToast) window.nhToast(err, "error");
+                        cancelBtnEl.disabled = false;
+                        cancelBtnEl.innerHTML = `<i class="bi bi-x-circle me-1"></i>Cancel Match`;
+                    }
+                } catch {
+                    if (window.nhToast) window.nhToast("Network error. Please try again.", "error");
+                    cancelBtnEl.disabled = false;
+                    cancelBtnEl.innerHTML = `<i class="bi bi-x-circle me-1"></i>Cancel Match`;
+                }
+            }
+        );
+    });
+}
+
 function scrollToBottom() {
     chatWindow.scrollTop = chatWindow.scrollHeight;
 }

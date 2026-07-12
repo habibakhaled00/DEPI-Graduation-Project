@@ -1,0 +1,236 @@
+@{
+    ViewData["Title"] = "Manage Requests";
+}
+
+<div class="container py-4 fade-up">
+
+    <div class="page-header mb-4">
+        <div>
+            <h1 class="section-title mb-1">
+                <i class="bi bi-card-list me-2" style="color:var(--accent-2)"></i>Manage Requests
+            </h1>
+            <p class="mb-0" style="color:var(--text-muted);font-size:0.85rem">
+                View and remove any help request on the platform
+            </p>
+        </div>
+        <a href="/Admin/Dashboard" class="quick-action-btn" style="width:auto;padding:0.5rem 1rem">
+            <i class="bi bi-arrow-left"></i> Dashboard
+        </a>
+    </div>
+
+    <!-- Search + Filter -->
+    <div class="nh-card p-3 mb-3">
+        <div class="row g-2 align-items-center">
+            <div class="col-md-7">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search by title or requester name…" autocomplete="off">
+                    <button class="input-group-text" id="clearSearch" style="cursor:pointer;display:none" title="Clear">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select id="statusFilter" class="form-select">
+                    <option value="">All Statuses</option>
+                    <option value="Open">Open</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Accepted">Accepted</option>
+                    <option value="Completed">Completed</option>
+                </select>
+            </div>
+            <div class="col-md-2 text-end">
+                <span id="reqCount" style="font-size:0.82rem;color:var(--text-muted)"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="nh-card" style="overflow:hidden">
+        <div class="table-responsive" id="requestsTable">
+            <div class="text-center py-5"><div class="spinner-border"></div></div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius)">
+            <div class="modal-header" style="border-color:var(--border)">
+                <h5 class="modal-title" style="color:var(--text-primary)">
+                    <i class="bi bi-trash3 me-2" style="color:var(--accent-3)"></i>Delete Request
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="color:var(--text-secondary)">
+                <p>Are you sure you want to permanently delete:</p>
+                <div class="nh-card p-3 mt-2">
+                    <strong id="deleteTitle" style="color:var(--text-primary)"></strong><br>
+                    <small id="deleteMeta" style="color:var(--text-muted)"></small>
+                </div>
+                <div class="alert alert-danger mt-3 mb-0" style="font-size:0.82rem">
+                    <i class="bi bi-exclamation-triangle me-1"></i>
+                    This action is permanent and cannot be undone. All associated chats and volunteer applications will also be removed.
+                </div>
+            </div>
+            <div class="modal-footer" style="border-color:var(--border)">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-outline-danger" id="confirmDeleteBtn">
+                    <i class="bi bi-trash3 me-1"></i>Delete Permanently
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    let allRequests = [];
+    let deleteId    = null;
+    let debounce;
+    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+
+    const statusColors = {
+        open:      { bg: 'var(--badge-open)',    color: 'var(--badge-open-text)', label: 'Open' },
+        pending:   { bg: 'var(--badge-pend)',    color: 'var(--badge-pend-text)', label: 'Pending' },
+        accepted:  { bg: 'rgba(108,99,255,0.15)', color: '#8b84ff',              label: 'Accepted' },
+        completed: { bg: 'var(--badge-comp)',    color: 'var(--badge-comp-text)', label: 'Completed' },
+    };
+
+    document.getElementById('searchInput').addEventListener('input', function () {
+        document.getElementById('clearSearch').style.display = this.value ? '' : 'none';
+        clearTimeout(debounce);
+        debounce = setTimeout(renderTable, 250);
+    });
+
+    document.getElementById('clearSearch').addEventListener('click', function () {
+        document.getElementById('searchInput').value = '';
+        this.style.display = 'none';
+        renderTable();
+    });
+
+    document.getElementById('statusFilter').addEventListener('change', renderTable);
+
+    async function loadRequests() {
+        const res = await fetch('/api/Admin/requests');
+        if (!res.ok) { document.getElementById('requestsTable').innerHTML = '<div class="p-4 text-center" style="color:var(--accent-3)">Access denied.</div>'; return; }
+        allRequests = await res.json();
+        renderTable();
+    }
+
+    function renderTable() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const status = document.getElementById('statusFilter').value.toLowerCase();
+
+        let data = allRequests;
+        if (search) data = data.filter(r =>
+            r.title.toLowerCase().includes(search) ||
+            r.requesterName.toLowerCase().includes(search) ||
+            r.requesterEmail.toLowerCase().includes(search)
+        );
+        if (status) data = data.filter(r => r.status.toLowerCase() === status);
+
+        document.getElementById('reqCount').textContent = data.length + ' request' + (data.length !== 1 ? 's' : '');
+
+        if (!data.length) {
+            document.getElementById('requestsTable').innerHTML =
+                '<div class="text-center py-5" style="color:var(--text-muted)"><i class="bi bi-inbox fs-1 d-block mb-2"></i>No requests found</div>';
+            return;
+        }
+
+        let html = `<table class="table table-hover mb-0">
+            <thead><tr>
+                <th>#</th><th>Title</th><th>Category</th>
+                <th>Requester</th><th>Status</th><th>Date</th>
+                <th style="text-align:center">Actions</th>
+            </tr></thead><tbody>`;
+
+        data.forEach(r => {
+            const sc = statusColors[r.status.toLowerCase()] || { bg: 'var(--bg-card)', color: 'var(--text-muted)', label: r.status };
+            html += `<tr>
+                <td style="color:var(--text-muted);font-size:0.8rem">#${r.requestId}</td>
+                <td>
+                    <div style="font-weight:600;color:var(--text-primary)">${r.title}</div>
+                    <div style="font-size:0.75rem;color:var(--text-muted)">${r.categoryName}</div>
+                </td>
+                <td>
+                    <span style="background:rgba(108,99,255,0.12);color:#8b84ff;padding:0.25em 0.6em;border-radius:999px;font-size:0.72rem;font-weight:600">
+                        ${r.categoryName}
+                    </span>
+                </td>
+                <td>
+                    <div style="font-weight:500">${r.requesterName}</div>
+                    <div style="font-size:0.75rem;color:var(--text-muted)">${r.requesterEmail}</div>
+                </td>
+                <td>
+                    <span style="background:${sc.bg};color:${sc.color};padding:0.3em 0.7em;border-radius:999px;font-size:0.72rem;font-weight:600">
+                        ${sc.label}
+                    </span>
+                </td>
+                <td style="color:var(--text-muted);font-size:0.8rem">${new Date(r.createdAt).toLocaleDateString()}</td>
+                <td style="text-align:center">
+                    <div class="d-flex gap-1 justify-content-center">
+                        <a href="/HelpRequests/Details/${r.requestId}" class="btn btn-outline-secondary btn-sm" target="_blank" title="View">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <button class="btn btn-outline-danger btn-sm" title="Delete"
+                                onclick="confirmDelete(${r.requestId}, '${r.title.replace(/'/g,"\\'")}', '${r.requesterName} · ${r.categoryName}')">
+                            <i class="bi bi-trash3"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>`;
+        });
+
+        html += '</tbody></table>';
+        document.getElementById('requestsTable').innerHTML = html;
+    }
+
+    function confirmDelete(id, title, meta) {
+        deleteId = id;
+        document.getElementById('deleteTitle').textContent = title;
+        document.getElementById('deleteMeta').textContent  = meta;
+        modal.show();
+    }
+
+    document.getElementById('confirmDeleteBtn').addEventListener('click', async function () {
+        if (!deleteId) return;
+        this.disabled = true;
+        this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Deleting…';
+
+        const res = await fetch(`/api/Admin/requests/${deleteId}`, { method: 'DELETE' });
+        if (res.ok) {
+            allRequests = allRequests.filter(r => r.requestId !== deleteId);
+            modal.hide();
+            renderTable();
+            showToast('Request deleted successfully.', 'success');
+        } else {
+            showToast('Failed to delete. Please try again.', 'error');
+        }
+
+        this.disabled = false;
+        this.innerHTML = '<i class="bi bi-trash3 me-1"></i>Delete Permanently';
+        deleteId = null;
+    });
+
+    function showToast(message, type) {
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+            position:fixed;bottom:24px;right:24px;z-index:9999;
+            background:${type === 'success' ? 'rgba(0,212,170,0.15)' : 'rgba(255,107,107,0.15)'};
+            border:1px solid ${type === 'success' ? '#00d4aa' : '#ff6b6b'};
+            color:${type === 'success' ? '#00d4aa' : '#ff6b6b'};
+            padding:0.75rem 1.25rem;border-radius:12px;
+            font-size:0.875rem;font-weight:500;
+            backdrop-filter:blur(12px);
+            animation:fadeUp 0.3s ease both;
+        `;
+        toast.innerHTML = `<i class="bi bi-${type === 'success' ? 'check-circle' : 'x-circle'} me-2"></i>${message}`;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    document.addEventListener('DOMContentLoaded', loadRequests);
+</script>
+}

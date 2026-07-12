@@ -1,20 +1,133 @@
-@{ ViewData["Title"] = "Notifications"; }
-<div class="container py-4" style="max-width:700px;">
-    <div class="d-flex justify-content-between mb-4"><h2><i class="bi bi-bell"></i> Notifications</h2>
-        <button class="btn btn-outline-secondary btn-sm" onclick="markAllRead()">Mark all read</button></div>
-    <div id="notifList"><div class="text-center py-5"><div class="spinner-border text-primary"></div></div></div>
+@{
+    ViewData["Title"] = "Notifications";
+}
+
+<div class="container py-4 fade-up" style="max-width: 720px;">
+
+    <!-- Header Banner -->
+    <div class="nh-card no-hover mb-4 p-4" 
+         style="background: linear-gradient(135deg, rgba(108,99,255,0.12) 0%, rgba(0,212,170,0.06) 100%);
+                border: 1px solid var(--border); border-radius: var(--radius); position: relative; overflow: hidden;">
+        <div style="position: absolute; width: 150px; height: 150px; border-radius: 50%;
+                    background: rgba(108,99,255,0.15); filter: blur(50px); top: -40px; right: -30px; pointer-events: none;"></div>
+        <div style="position: absolute; width: 100px; height: 100px; border-radius: 50%;
+                    background: rgba(0,212,170,0.1); filter: blur(40px); bottom: -30px; left: 10%; pointer-events: none;"></div>
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2" style="position: relative; z-index: 1;">
+            <div>
+                <h1 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 0.2rem;">
+                    <i class="bi bi-bell-fill me-2" style="color: var(--accent);"></i>Notifications
+                </h1>
+                <p class="mb-0" style="color: var(--text-muted); font-size: 0.85rem;">
+                    Keep track of updates, volunteer requests, and chat activities
+                </p>
+            </div>
+            <button class="btn btn-outline-secondary btn-sm" onclick="markAllRead()" style="border-radius: var(--radius-sm);">
+                <i class="bi bi-check2-all me-1"></i>Mark all read
+            </button>
+        </div>
+    </div>
+
+    <!-- Notification List -->
+    <div id="notifList">
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+        </div>
+    </div>
 </div>
+
 @section Scripts {
 <script>
-async function load(){
-    const res=await fetch('/api/NotificationsApi');const notifs=await res.json();
-    if(!notifs.length){document.getElementById('notifList').innerHTML='<p class="text-muted text-center py-4">No notifications yet.</p>';return;}
-    let html='<div class="list-group">';
-    notifs.forEach(n=>{html+=`<div class="list-group-item ${!n.isRead?'list-group-item-light':''}">
-        <div class="d-flex justify-content-between"><div><strong>${n.title}</strong><p class="mb-0 text-muted">${n.body}</p></div>
-        <small class="text-muted">${new Date(n.createdAt).toLocaleDateString()}</small></div></div>`;});
-    html+='</div>';document.getElementById('notifList').innerHTML=html;
+    async function load() {
+        try {
+            const res = await fetch('/api/NotificationsApi');
+            const notifs = await res.json();
+            const listEl = document.getElementById('notifList');
+
+            if (!notifs.length) {
+                listEl.innerHTML = `
+                    <div class="nh-card text-center py-5 sr">
+                        <i class="bi bi-bell-slash fs-1 d-block mb-3" style="color: var(--text-muted);"></i>
+                        <h5 style="color: var(--text-primary);">All caught up!</h5>
+                        <p class="mb-0 text-muted" style="font-size: 0.875rem;">No new notifications for you right now.</p>
+                    </div>`;
+                return;
+            }
+
+            let html = '<div class="d-flex flex-column gap-3 stagger">';
+            notifs.forEach((n, idx) => {
+                // Determine icon and color based on notification content or title
+                let iconClass = 'bi-bell';
+                let iconBg = 'rgba(108, 99, 255, 0.12)';
+                let iconColor = 'var(--accent)';
+                
+                const titleLower = n.title.toLowerCase();
+                if (titleLower.includes('chat') || titleLower.includes('message')) {
+                    iconClass = 'bi-chat-dots';
+                    iconBg = 'rgba(0, 212, 170, 0.12)';
+                    iconColor = 'var(--accent-2)';
+                } else if (titleLower.includes('volunteer') || titleLower.includes('apply')) {
+                    iconClass = 'bi-person-heart';
+                    iconBg = 'rgba(255, 170, 0, 0.12)';
+                    iconColor = '#ffaa00';
+                } else if (titleLower.includes('accept') || titleLower.includes('completed')) {
+                    iconClass = 'bi-check-circle';
+                    iconBg = 'rgba(139, 132, 255, 0.15)';
+                    iconColor = '#8b84ff';
+                }
+
+                const isUnread = !n.isRead;
+                const cardStyle = isUnread 
+                    ? 'border-color: rgba(108, 99, 255, 0.3); background: rgba(108, 99, 255, 0.04);' 
+                    : '';
+
+                html += `
+                    <div class="nh-card p-3 fade-up" style="${cardStyle}">
+                        <div class="d-flex gap-3 align-items-start">
+                            <div style="width: 40px; height: 40px; border-radius: var(--radius-sm); 
+                                        background: ${iconBg}; display: flex; align-items: center; 
+                                        justify-content: center; font-size: 1.1rem; color: ${iconColor}; flex-shrink: 0;">
+                                <i class="bi ${iconClass}"></i>
+                            </div>
+                            <div style="flex: 1; min-width: 0;">
+                                <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+                                    <h6 class="mb-0" style="font-weight: 700; color: var(--text-primary); font-size: 0.92rem;">
+                                        ${n.title}
+                                    </h6>
+                                    <small class="text-muted" style="font-size: 0.75rem; flex-shrink: 0;">
+                                        ${new Date(n.createdAt).toLocaleDateString()}
+                                    </small>
+                                </div>
+                                <p class="mb-0" style="color: var(--text-secondary); font-size: 0.85rem; line-height: 1.4;">
+                                    ${n.body}
+                                </p>
+                            </div>
+                            ${isUnread ? '<span class="pulse-dot" style="margin-top: 0.4rem;" title="New"></span>' : ''}
+                        </div>
+                    </div>`;
+            });
+            html += '</div>';
+            listEl.innerHTML = html;
+
+            if (window.initStagger) window.initStagger();
+        } catch (err) {
+            document.getElementById('notifList').innerHTML = 
+                '<div class="alert alert-danger">Failed to load notifications. Please try again.</div>';
+        }
+    }
+
+    async function markAllRead() {
+        try {
+            await fetch('/api/NotificationsApi/read-all', { method: 'PUT' });
+            load();
+            // Dispatch event to update navbar bell badge if any exists
+            document.dispatchEvent(new CustomEvent('updateNavNotifications'));
+            if (window.nhToast) window.nhToast('All notifications marked as read.');
+        } catch (err) {
+            if (window.nhToast) window.nhToast('Failed to mark notifications read.', 'error');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', load);
+</script>
 }
-async function markAllRead(){await fetch('/api/NotificationsApi/read-all',{method:'PUT'});load();}
-document.addEventListener('DOMContentLoaded',load);
-</script>}

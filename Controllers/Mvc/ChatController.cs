@@ -35,6 +35,7 @@ namespace NeighborHelp.Controllers.Mvc
 
             ViewBag.RequestId = requestId;
             ViewBag.RequestTitle = request.Title;
+            ViewBag.IsOwner = isOwner;
             return View();
         }
     }

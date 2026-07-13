@@ -86,7 +86,6 @@
         };
     }
 
-    // ── Build stat cards ─────────────────────────────────────
     function buildStatCards() {
         const stats = [
             { icon:'bi-people-fill',    label:'Total Users',    value: DASH.totalUsers,       color:'#6c63ff' },
@@ -113,7 +112,6 @@
         if (window.initCounters) initCounters();
     }
 
-    // ── Build charts ─────────────────────────────────────────
     function buildCharts() {
         const th = getTheme();
         const P  = ['#6c63ff','#00d4aa','#ff6b6b','#ffaa00','#06b6d4','#f43f5e','#8b5cf6','#64748b'];
@@ -155,7 +153,6 @@
         });
     }
 
-    // ── Build activity logs table ─────────────────────────────
     function buildLogs() {
         const logs = LOGS;
         if (!logs.length) {
@@ -182,7 +179,6 @@
         document.getElementById('logsTable').innerHTML = html;
     }
 
-    // ── Init ──────────────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', () => {
         buildStatCards();
         buildCharts();

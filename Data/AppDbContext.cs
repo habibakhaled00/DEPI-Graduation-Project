@@ -8,13 +8,11 @@ namespace NeighborHelp.Data
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        // Assem's tables
         public DbSet<HelpRequest> HelpRequests { get; set; }
         public DbSet<VolunteerRequest> VolunteerRequests { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<ChatMessage> ChatMessages { get; set; }
 
-        // Member 1 + Member 4 tables
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Notification> Notifications { get; set; }
@@ -25,7 +23,6 @@ namespace NeighborHelp.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // ---- Assem's relationships (kept exactly as-is) ----
             modelBuilder.Entity<HelpRequest>()
                 .HasOne(h => h.User).WithMany()
                 .HasForeignKey(h => h.UserId).OnDelete(DeleteBehavior.Restrict);
@@ -55,7 +52,6 @@ namespace NeighborHelp.Data
             modelBuilder.Entity<VolunteerRequest>()
                 .Property(v => v.Status).HasConversion<string>();
 
-            // ---- Member 4: Rating relationships ----
             modelBuilder.Entity<Rating>()
                 .HasOne(r => r.Rater).WithMany()
                 .HasForeignKey(r => r.RaterId).OnDelete(DeleteBehavior.Restrict);
@@ -72,7 +68,6 @@ namespace NeighborHelp.Data
                 .HasOne(rv => rv.Rating).WithOne(r => r.Review)
                 .HasForeignKey<Review>(rv => rv.RatingId).OnDelete(DeleteBehavior.Cascade);
 
-            // ---- Member 1: Notification ----
             modelBuilder.Entity<Notification>()
                 .HasOne(n => n.User).WithMany()
                 .HasForeignKey(n => n.UserId).OnDelete(DeleteBehavior.Cascade);
@@ -83,12 +78,10 @@ namespace NeighborHelp.Data
             modelBuilder.Entity<Notification>()
                 .HasIndex(n => new { n.UserId, n.IsRead });
 
-            // ---- Member 4: AdminLog ----
             modelBuilder.Entity<AdminLog>()
                 .HasOne(a => a.Admin).WithMany()
                 .HasForeignKey(a => a.AdminId).OnDelete(DeleteBehavior.Restrict);
 
-            // ---- Assem's seed data (kept as-is) ----
             modelBuilder.Entity<Category>().HasData(
                 new Category { CategoryId = 1, Name = "Groceries & Errands" },
                 new Category { CategoryId = 2, Name = "Home Repair" },

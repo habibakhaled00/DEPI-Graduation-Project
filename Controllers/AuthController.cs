@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -123,6 +124,19 @@ namespace NeighborHelp.Controllers
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+        [HttpPost("change-password")]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest req)
+        {
+            var user = await _user.GetUserAsync(User);
+            if (user == null) return Unauthorized();
+
+            var result = await _user.ChangePasswordAsync(user, req.CurrentPassword, req.NewPassword);
+            if (!result.Succeeded)
+                return BadRequest(new { errors = result.Errors.Select(e => e.Description) });
+
+            return Ok(new { message = "Password changed successfully." });
         }
     }
 }

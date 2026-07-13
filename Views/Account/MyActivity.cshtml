@@ -1,0 +1,74 @@
+@{
+    ViewData["Title"] = "My Activity";
+}
+
+<div class="container py-4" style="max-width:900px;">
+    <h2 class="mb-4"><i class="bi bi-grid"></i> My Activity</h2>
+
+    <!-- Stats -->
+    <div class="row mb-4" id="myStats">
+        <div class="col-md-3 mb-3"><div class="card text-center p-3 shadow-sm"><div class="spinner-border spinner-border-sm text-primary"></div></div></div>
+    </div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-3" id="activityTabs">
+        <li class="nav-item">
+            <a class="nav-link active" data-bs-toggle="tab" href="#myRequests"><i class="bi bi-list-check"></i> My Requests</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#myApplications"><i class="bi bi-hand-thumbs-up"></i> My Applications</a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="myRequests">
+            <div id="requestsList"><div class="text-center py-4"><div class="spinner-border text-primary"></div></div></div>
+        </div>
+        <div class="tab-pane fade" id="myApplications">
+            <div id="applicationsList"><div class="text-center py-4"><div class="spinner-border text-primary"></div></div></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+async function loadMyActivity() {
+        // load my requests
+            try {
+                const res = await fetch('/api/HelpRequests');
+                if (res.ok) {
+                    const data = await res.json();
+                    const items = data.items || [];
+                    // filter to only MY requests
+                    const profileRes = await fetch('/api/UserProfile');
+                    const profile = await profileRes.json();
+                    const myItems = items.filter(r => r.userId === profile.userId);
+
+                    if (!myItems.length) {
+                        document.getElementById('requestsList').innerHTML = '<p class="text-muted text-center py-4">You haven\'t posted any requests yet. <a href="/HelpRequests/Create">Post one now!</a></p>';
+                    } else {
+                        let html = '<div class="list-group">';
+                        myItems.forEach(r => {
+                            const statusClass = r.status === 'Open' ? 'bg-success' : r.status === 'Accepted' ? 'bg-primary' : r.status === 'Pending' ? 'bg-warning text-dark' : 'bg-secondary';
+                            html += `<a href="/HelpRequests/Details/${r.requestId}" class="list-group-item list-group-item-action">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>${r.title}</strong>
+                                        <br><small class="text-muted">${r.categoryName} &middot; ${new Date(r.createdAt).toLocaleDateString()}</small>
+                                    </div>
+                                    <span class="badge ${statusClass}">${r.status}</span>
+                                </div>
+                            </a>`;
+                        });
+                        html += '</div>';
+                        document.getElementById('requestsList').innerHTML = html;
+                    }
+                }
+            } catch {
+                document.getElementById('requestsList').innerHTML = '<p class="text-muted text-center">Could not load requests.</p>';
+            }
+}
+
+document.addEventListener('DOMContentLoaded', loadMyActivity);
+</script>
+}

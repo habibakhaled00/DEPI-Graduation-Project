@@ -10,30 +10,29 @@
         width: 100% !important;
     }
 
-    .login-wrapper {
-        min-height: calc(100vh - 80px);
+    .settings-wrapper {
         display: flex;
-        align-items: center;
         justify-content: center;
-        position: relative;
-        background: transparent !important;
         padding: 2rem;
         width: 100%;
     }
 
-    .auth-card {
+    .settings-content {
         width: 100%;
         max-width: 580px;
+    }
+
+    .auth-card {
+        width: 100%;
         position: relative;
         z-index: 1;
         animation: slideUp 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
         background: var(--bg-card) !important;
         border: 1px solid var(--border) !important;
-        backdrop-filter: blur(16px) !important;
-        -webkit-backdrop-filter: blur(16px) !important;
         border-radius: var(--radius) !important;
-        padding: 3rem 2.5rem;
+        padding: 2.5rem 2rem;
         box-shadow: var(--shadow-sm) !important;
+        margin-bottom: 1.5rem;
     }
 
     @@keyframes slideUp {
@@ -41,51 +40,89 @@
         to   { opacity: 1; transform: translateY(0); }
     }
 
-    .form-title { font-size: 1.6rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.3rem; }
-    .form-sub   { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 2rem; }
+    .form-title { font-size: 1.4rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.3rem; }
+    .form-sub   { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem; }
+    .section-label { font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); }
 </style>
 
-<div class="login-wrapper">
-    <div class="auth-card">
-        <h1 class="form-title">
-            <i class="bi bi-gear-fill me-2" style="color: var(--accent);"></i>Profile Settings
-        </h1>
-        <p class="form-sub">Update your public profile details and contact coordinates</p>
+<div class="settings-wrapper">
+    <div class="settings-content">
 
-        <div id="settingsAlert" class="alert d-none mb-3"></div>
+        <!-- Profile Settings Card -->
+        <div class="auth-card">
+            <h1 class="form-title">
+                <i class="bi bi-gear-fill me-2" style="color: var(--accent);"></i>Profile Settings
+            </h1>
+            <p class="form-sub">Update your public profile details and contact coordinates</p>
 
-        <form id="settingsForm">
-            <div class="row">
-                <div class="col-6 mb-3">
-                    <label class="form-label" style="font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary);">First Name</label>
-                    <input type="text" class="form-control" id="firstName" required maxlength="50">
+            <div id="settingsAlert" class="alert d-none mb-3"></div>
+
+            <form id="settingsForm">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label class="form-label section-label">First Name</label>
+                        <input type="text" class="form-control" id="firstName" required maxlength="50">
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label class="form-label section-label">Last Name</label>
+                        <input type="text" class="form-control" id="lastName" required maxlength="50">
+                    </div>
                 </div>
-                <div class="col-6 mb-3">
-                    <label class="form-label" style="font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary);">Last Name</label>
-                    <input type="text" class="form-control" id="lastName" required maxlength="50">
+
+                <div class="mb-3">
+                    <label class="form-label section-label">Bio</label>
+                    <textarea class="form-control" id="bio" rows="3" maxlength="500" placeholder="Tell neighbors a bit about yourself..."></textarea>
                 </div>
-            </div>
 
-            <div class="mb-3">
-                <label class="form-label" style="font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary);">Bio</label>
-                <textarea class="form-control" id="bio" rows="3" maxlength="500" placeholder="Tell neighbors a bit about yourself..."></textarea>
-            </div>
+                <div class="mb-3">
+                    <label class="form-label section-label">Address</label>
+                    <input type="text" class="form-control" id="address" maxlength="200" placeholder="e.g. 12 Nile St, Cairo">
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label" style="font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary);">Address</label>
-                <input type="text" class="form-control" id="address" maxlength="200" placeholder="e.g. 12 Nile St, Cairo">
-            </div>
+                <div class="mb-4">
+                    <label class="form-label section-label">Phone</label>
+                    <input type="text" class="form-control" id="phone" placeholder="e.g. +20123456789">
+                </div>
 
-            <div class="mb-4">
-                <label class="form-label" style="font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary);">Phone</label>
-                <input type="text" class="form-control" id="phone" placeholder="e.g. +20123456789">
-            </div>
+                <button type="submit" class="btn btn-primary w-100 py-2" id="saveBtn"
+                        style="background: var(--accent); border-color: var(--accent); font-weight: 600; border-radius: var(--radius-sm);">
+                    Save Changes
+                </button>
+            </form>
+        </div>
 
-            <button type="submit" class="btn btn-primary w-100 py-2.5" id="saveBtn"
-                    style="background: var(--accent); border-color: var(--accent); font-weight: 600; border-radius: var(--radius-sm);">
-                Save Changes
-            </button>
-        </form>
+        <!-- Change Password Card -->
+        <div class="auth-card" style="animation-delay: 0.1s;">
+            <h1 class="form-title">
+                <i class="bi bi-lock-fill me-2" style="color: var(--accent);"></i>Change Password
+            </h1>
+            <p class="form-sub">Update your account password</p>
+
+            <div id="passwordAlert" class="alert d-none mb-3"></div>
+
+            <form id="passwordForm">
+                <div class="mb-3">
+                    <label class="form-label section-label">Current Password</label>
+                    <input type="password" class="form-control" id="currentPassword" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label section-label">New Password</label>
+                    <input type="password" class="form-control" id="newPassword" required minlength="6">
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label section-label">Confirm New Password</label>
+                    <input type="password" class="form-control" id="confirmPassword" required minlength="6">
+                </div>
+
+                <button type="submit" class="btn w-100 py-2" id="passBtn"
+                        style="background: transparent; border: 2px solid var(--accent); color: var(--accent); font-weight: 600; border-radius: var(--radius-sm);">
+                    Update Password
+                </button>
+            </form>
+        </div>
+
     </div>
 </div>
 
@@ -103,29 +140,25 @@
                 document.getElementById('bio').value = p.bio || '';
                 document.getElementById('phone').value = p.phoneNumber || '';
             } catch (err) {
-                console.error("Failed to load user profile", err);
+                console.error("Failed to load profile", err);
             }
         }
 
+        // save profile
         document.getElementById('settingsForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const alertBox = document.getElementById('settingsAlert');
             const saveBtn = document.getElementById('saveBtn');
             alertBox.classList.add('d-none');
-            
             saveBtn.disabled = true;
-            saveBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Saving...`;
-
-            const phoneVal = document.getElementById('phone').value.trim();
-            const bioVal = document.getElementById('bio').value.trim();
-            const addressVal = document.getElementById('address').value.trim();
+            saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
 
             const payload = {
                 firstName: document.getElementById('firstName').value.trim(),
                 lastName: document.getElementById('lastName').value.trim(),
-                bio: bioVal === "" ? null : bioVal,
-                address: addressVal === "" ? null : addressVal,
-                phoneNumber: phoneVal === "" ? null : phoneVal
+                bio: document.getElementById('bio').value.trim() || null,
+                address: document.getElementById('address').value.trim() || null,
+                phoneNumber: document.getElementById('phone').value.trim() || null
             };
 
             try {
@@ -134,30 +167,74 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-
                 if (res.ok) {
                     alertBox.className = 'alert alert-success';
                     alertBox.textContent = 'Profile updated!';
-                    alertBox.classList.remove('d-none');
                 } else {
-                    let errMsg = 'Failed to update.';
-                    try {
-                        const errObj = await res.json();
-                        errMsg = errObj.message || errMsg;
-                    } catch (_) {
-                        errMsg = await res.text() || errMsg;
-                    }
+                    let msg = 'Failed to update.';
+                    try { const e = await res.json(); msg = e.message || msg; } catch {}
                     alertBox.className = 'alert alert-danger';
-                    alertBox.textContent = errMsg;
-                    alertBox.classList.remove('d-none');
+                    alertBox.textContent = msg;
                 }
-            } catch (err) {
+                alertBox.classList.remove('d-none');
+            } catch {
                 alertBox.className = 'alert alert-danger';
-                alertBox.textContent = 'Network error. Please try again.';
+                alertBox.textContent = 'Network error.';
                 alertBox.classList.remove('d-none');
             } finally {
                 saveBtn.disabled = false;
                 saveBtn.textContent = 'Save Changes';
+            }
+        });
+
+        // change password
+        document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const alertBox = document.getElementById('passwordAlert');
+            const passBtn = document.getElementById('passBtn');
+            alertBox.classList.add('d-none');
+
+            const newPass = document.getElementById('newPassword').value;
+            const confirmPass = document.getElementById('confirmPassword').value;
+
+            if (newPass !== confirmPass) {
+                alertBox.className = 'alert alert-danger';
+                alertBox.textContent = 'New passwords do not match.';
+                alertBox.classList.remove('d-none');
+                return;
+            }
+
+            passBtn.disabled = true;
+            passBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Updating...';
+
+            try {
+                const res = await fetch('/api/Auth/change-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        currentPassword: document.getElementById('currentPassword').value,
+                        newPassword: newPass
+                    })
+                });
+
+                if (res.ok) {
+                    alertBox.className = 'alert alert-success';
+                    alertBox.textContent = 'Password changed successfully!';
+                    document.getElementById('passwordForm').reset();
+                } else {
+                    let msg = 'Failed to change password.';
+                    try { const e = await res.json(); msg = (e.errors || []).join(', ') || e.message || msg; } catch {}
+                    alertBox.className = 'alert alert-danger';
+                    alertBox.textContent = msg;
+                }
+                alertBox.classList.remove('d-none');
+            } catch {
+                alertBox.className = 'alert alert-danger';
+                alertBox.textContent = 'Network error.';
+                alertBox.classList.remove('d-none');
+            } finally {
+                passBtn.disabled = false;
+                passBtn.textContent = 'Update Password';
             }
         });
 

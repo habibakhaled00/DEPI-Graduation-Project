@@ -82,7 +82,7 @@
                     : '';
 
                 html += `
-                    <div class="nh-card p-3 fade-up" style="${cardStyle}">
+                        <div class="nh-card p-3 fade-up" style="${cardStyle} cursor:pointer;" onclick="${n.relatedUrl ? `window.location.href='${n.relatedUrl}'` : ''}">
                         <div class="d-flex gap-3 align-items-start">
                             <div style="width: 40px; height: 40px; border-radius: var(--radius-sm); 
                                         background: ${iconBg}; display: flex; align-items: center; 

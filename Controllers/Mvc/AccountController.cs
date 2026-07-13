@@ -44,5 +44,9 @@ namespace NeighborHelp.Controllers.Mvc
         [HttpGet("Settings")]
         [Authorize]
         public IActionResult Settings() => View();
+
+        [HttpGet("MyActivity")]
+        [Authorize]
+        public IActionResult MyActivity() => View("~/Views/Account/MyActivity.cshtml");
     }
 }

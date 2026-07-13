@@ -71,4 +71,9 @@ namespace NeighborHelp.DTOs
         public int RequestsPosted { get; set; }
         public int PeopleHelped { get; set; }
     }
+    public class ChangePasswordRequest
+    {
+        public string CurrentPassword { get; set; } = "";
+        public string NewPassword { get; set; } = "";
+    }
 }

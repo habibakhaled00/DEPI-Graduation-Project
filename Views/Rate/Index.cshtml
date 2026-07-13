@@ -1,42 +1,133 @@
 @{ ViewData["Title"] = "Rate"; int requestId = ViewBag.RequestId; }
-<div class="container py-4" style="max-width:500px;">
-    <div class="card shadow-sm"><div class="card-body p-4">
-        <h3 class="text-center mb-4"><i class="bi bi-star"></i> Rate Helper</h3>
-        <div id="rateAlert" class="alert d-none"></div>
-        <form id="rateForm">
-            <input type="hidden" id="requestId" value="@requestId">
-            <div class="mb-3"><label class="form-label">Who are you rating?</label><input class="form-control" id="ratedUserId" required placeholder="User ID of the helper"></div>
-            <div class="mb-3 text-center"><label class="form-label d-block">Score</label>
-                <div id="stars" class="d-flex justify-content-center gap-2">
-                    <span class="bi bi-star fs-2" style="cursor:pointer" data-v="1"></span>
-                    <span class="bi bi-star fs-2" style="cursor:pointer" data-v="2"></span>
-                    <span class="bi bi-star fs-2" style="cursor:pointer" data-v="3"></span>
-                    <span class="bi bi-star fs-2" style="cursor:pointer" data-v="4"></span>
-                    <span class="bi bi-star fs-2" style="cursor:pointer" data-v="5"></span>
-                </div><input type="hidden" id="score" value="0">
-            </div>
-            <div class="mb-3"><label class="form-label">Comment</label><textarea class="form-control" id="comment" rows="2"></textarea></div>
-            <div class="mb-3"><label class="form-label">Detailed Review (optional)</label><textarea class="form-control" id="reviewContent" rows="3"></textarea></div>
-            <button type="submit" class="btn btn-warning w-100">Submit Rating</button>
-        </form>
-    </div></div>
+
+<div class="container py-4" style="max-width:550px;">
+    <a href="/HelpRequests/Details/@requestId" class="btn btn-link ps-0 mb-3">
+        <i class="bi bi-arrow-left"></i> Back to request
+    </a>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-4">
+            <h3 class="text-center mb-2"><i class="bi bi-star-fill text-warning"></i> Rate Helper</h3>
+            <p id="ratingTarget" class="text-center text-muted mb-4"></p>
+            
+            <div id="rateAlert" class="alert d-none"></div>
+
+            <form id="rateForm">
+                <input type="hidden" id="requestId" value="@requestId">
+                <input type="hidden" id="ratedUserId" value="">
+
+                <!-- Star selection -->
+                <div class="mb-4 text-center">
+                    <label class="form-label d-block fw-bold">How would you rate them?</label>
+                    <div id="stars" class="d-flex justify-content-center gap-3 mt-2">
+                        <span class="bi bi-star fs-1" style="cursor:pointer;transition:all .15s" data-v="1"></span>
+                        <span class="bi bi-star fs-1" style="cursor:pointer;transition:all .15s" data-v="2"></span>
+                        <span class="bi bi-star fs-1" style="cursor:pointer;transition:all .15s" data-v="3"></span>
+                        <span class="bi bi-star fs-1" style="cursor:pointer;transition:all .15s" data-v="4"></span>
+                        <span class="bi bi-star fs-1" style="cursor:pointer;transition:all .15s" data-v="5"></span>
+                    </div>
+                    <input type="hidden" id="score" value="0">
+                    <small id="scoreLabel" class="text-muted mt-1 d-block"></small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Quick comment</label>
+                    <textarea class="form-control" id="comment" rows="2" placeholder="How was the experience?"></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Detailed review <span class="text-muted fw-normal">(optional)</span></label>
+                    <textarea class="form-control" id="reviewContent" rows="3" placeholder="Write a longer review if you'd like..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-warning w-100 btn-lg" id="submitBtn">
+                    <i class="bi bi-send"></i> Submit Rating
+                </button>
+            </form>
+        </div>
+    </div>
 </div>
+
 @section Scripts {
 <script>
-document.querySelectorAll('#stars span').forEach(s=>{
-    s.addEventListener('click',()=>{const v=+s.dataset.v;document.getElementById('score').value=v;
-        document.querySelectorAll('#stars span').forEach(x=>{x.className=+x.dataset.v<=v?'bi bi-star-fill fs-2 text-warning':'bi bi-star fs-2';});});
-    s.addEventListener('mouseover',()=>{const v=+s.dataset.v;
-        document.querySelectorAll('#stars span').forEach(x=>{x.className=+x.dataset.v<=v?'bi bi-star-fill fs-2 text-warning':'bi bi-star fs-2';});});
+const labels = ['','Terrible','Poor','Okay','Good','Excellent'];
+
+// get ratedUserId from URL query params
+const params = new URLSearchParams(window.location.search);
+const ratedUserId = params.get('userId');
+const ratedUserName = params.get('name');
+
+if(ratedUserId){
+    document.getElementById('ratedUserId').value = ratedUserId;
+    document.getElementById('ratingTarget').textContent = 'Rating: ' + (ratedUserName || ratedUserId);
+} else {
+    document.getElementById('ratingTarget').textContent = 'No user specified';
+    document.getElementById('submitBtn').disabled = true;
+}
+
+// star interaction
+document.querySelectorAll('#stars span').forEach(s => {
+    s.addEventListener('click', () => {
+        const v = +s.dataset.v;
+        document.getElementById('score').value = v;
+        document.getElementById('scoreLabel').textContent = labels[v] + ' (' + v + '/5)';
+        updateStars(v);
+    });
+    s.addEventListener('mouseover', () => updateStars(+s.dataset.v));
+    s.addEventListener('mouseout', () => updateStars(+document.getElementById('score').value));
 });
-document.getElementById('rateForm').addEventListener('submit',async(e)=>{
-    e.preventDefault();const alert=document.getElementById('rateAlert');
-    const score=+document.getElementById('score').value;
-    if(score<1){alert.className='alert alert-danger';alert.textContent='Please select a rating.';return;}
-    const res=await fetch('/api/Ratings',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({ratedUserId:document.getElementById('ratedUserId').value,requestId:+document.getElementById('requestId').value,
-            score,comment:document.getElementById('comment').value,reviewContent:document.getElementById('reviewContent').value})});
-    if(res.ok){alert.className='alert alert-success';alert.textContent='Rating submitted!';setTimeout(()=>window.location.href=`/HelpRequests/Details/${document.getElementById('requestId').value}`,1500);}
-    else{const d=await res.text();alert.className='alert alert-danger';alert.textContent=d||'Failed.';}
+
+function updateStars(val){
+    document.querySelectorAll('#stars span').forEach(x => {
+        x.className = +x.dataset.v <= val ? 'bi bi-star-fill fs-1 text-warning' : 'bi bi-star fs-1';
+    });
+}
+
+document.getElementById('rateForm').addEventListener('submit', async(e) => {
+    e.preventDefault();
+    const alert = document.getElementById('rateAlert');
+    const score = +document.getElementById('score').value;
+    
+    if(score < 1){
+        alert.className = 'alert alert-danger';
+        alert.textContent = 'Please select a star rating.';
+        return;
+    }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Submitting...';
+
+    try {
+        const res = await fetch('/api/Ratings', {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({
+                ratedUserId: document.getElementById('ratedUserId').value,
+                requestId: +document.getElementById('requestId').value,
+                score,
+                comment: document.getElementById('comment').value,
+                reviewContent: document.getElementById('reviewContent').value
+            })
+        });
+        
+        if(res.ok){
+            alert.className = 'alert alert-success';
+            alert.textContent = 'Rating submitted! Redirecting...';
+            setTimeout(() => window.location.href = '/HelpRequests/Details/' + document.getElementById('requestId').value, 1500);
+        } else {
+            const d = await res.text();
+            alert.className = 'alert alert-danger';
+            alert.textContent = d || 'Failed to submit rating.';
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-send"></i> Submit Rating';
+        }
+    } catch {
+        alert.className = 'alert alert-danger';
+        alert.textContent = 'Network error.';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-send"></i> Submit Rating';
+    }
 });
-</script>}
+</script>
+}

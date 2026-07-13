@@ -2,8 +2,14 @@
     ViewData["Title"] = "Error";
 }
 
-<div class="container py-5 text-center">
-    <h1 class="display-5 text-danger"><i class="bi bi-exclamation-triangle"></i> Something went wrong</h1>
-    <p class="text-muted">An unexpected error occurred. Please try again later.</p>
-    <a asp-controller="HelpRequests" asp-action="Index" class="btn btn-primary mt-3">Back to Home</a>
+<div class="container py-5">
+    <div class="text-center">
+        <i class="bi bi-exclamation-triangle display-1 text-danger"></i>
+        <h1 class="mt-3">Oops! Something went wrong</h1>
+        <p class="text-muted fs-5">The page you're looking for doesn't exist or an error occurred.</p>
+        <div class="d-flex gap-2 justify-content-center mt-4">
+            <a href="/" class="btn btn-primary btn-lg"><i class="bi bi-house"></i> Go Home</a>
+            <button onclick="history.back()" class="btn btn-outline-secondary btn-lg"><i class="bi bi-arrow-left"></i> Go Back</button>
+        </div>
+    </div>
 </div>

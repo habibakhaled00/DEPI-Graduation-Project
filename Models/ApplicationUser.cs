@@ -29,7 +29,6 @@ namespace NeighborHelp.Models
         public DateTime JoinedDate { get; set; } = DateTime.UtcNow;
         public bool IsActive { get; set; } = true;
 
-        // kept for backward compat with Assem's code
         public string FullName => FirstName + " " + LastName;
     }
 }

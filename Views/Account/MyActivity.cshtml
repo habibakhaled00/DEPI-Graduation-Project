@@ -2,30 +2,37 @@
     ViewData["Title"] = "My Activity";
 }
 
-<div class="container py-4" style="max-width:900px;">
-    <h2 class="mb-4"><i class="bi bi-grid"></i> My Activity</h2>
+<div class="container py-4 fade-up" style="max-width:900px;">
+    <div class="page-header mb-4">
+        <div>
+            <h1 class="section-title mb-1"><i class="bi bi-grid me-2" style="color:var(--accent)"></i>My Activity</h1>
+            <p class="mb-0" style="color:var(--text-muted);font-size:0.85rem">Your requests and volunteer applications</p>
+        </div>
+    </div>
 
     <!-- Stats -->
-    <div class="row mb-4" id="myStats">
-        <div class="col-md-3 mb-3"><div class="card text-center p-3 shadow-sm"><div class="spinner-border spinner-border-sm text-primary"></div></div></div>
+    <div class="row mb-4 g-3" id="myStats">
+        <div class="col-12 text-center py-3">
+            <div class="spinner-border" style="color:var(--accent)"></div>
+        </div>
     </div>
 
     <!-- Tabs -->
-    <ul class="nav nav-tabs mb-3" id="activityTabs">
+    <ul class="nav nav-tabs mb-3" id="activityTabs" style="border-bottom: 1px solid var(--border);">
         <li class="nav-item">
-            <a class="nav-link active" data-bs-toggle="tab" href="#myRequests"><i class="bi bi-list-check"></i> My Requests</a>
+            <a class="nav-link active" data-bs-toggle="tab" href="#myRequests"><i class="bi bi-list-check me-1"></i> My Requests</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="tab" href="#myApplications"><i class="bi bi-hand-thumbs-up"></i> My Applications</a>
+            <a class="nav-link" data-bs-toggle="tab" href="#myApplications"><i class="bi bi-hand-thumbs-up me-1"></i> My Applications</a>
         </li>
     </ul>
 
     <div class="tab-content">
         <div class="tab-pane fade show active" id="myRequests">
-            <div id="requestsList"><div class="text-center py-4"><div class="spinner-border text-primary"></div></div></div>
+            <div id="requestsList"><div class="text-center py-4"><div class="spinner-border" style="color:var(--accent)"></div></div></div>
         </div>
         <div class="tab-pane fade" id="myApplications">
-            <div id="applicationsList"><div class="text-center py-4"><div class="spinner-border text-primary"></div></div></div>
+            <div id="applicationsList"><div class="text-center py-4"><div class="spinner-border" style="color:var(--accent)"></div></div></div>
         </div>
     </div>
 </div>
@@ -33,40 +40,96 @@
 @section Scripts {
 <script>
 async function loadMyActivity() {
-        // load my requests
-            try {
-                const res = await fetch('/api/HelpRequests');
-                if (res.ok) {
-                    const data = await res.json();
-                    const items = data.items || [];
-                    // filter to only MY requests
-                    const profileRes = await fetch('/api/UserProfile');
-                    const profile = await profileRes.json();
-                    const myItems = items.filter(r => r.userId === profile.userId);
+    try {
+        const profileRes = await fetch('/api/UserProfile');
+        if (!profileRes.ok) {
+            document.getElementById('requestsList').innerHTML = '<p class="text-muted text-center py-4">Please log in to view your activity.</p>';
+            return;
+        }
+        const profile = await profileRes.json();
 
-                    if (!myItems.length) {
-                        document.getElementById('requestsList').innerHTML = '<p class="text-muted text-center py-4">You haven\'t posted any requests yet. <a href="/HelpRequests/Create">Post one now!</a></p>';
-                    } else {
-                        let html = '<div class="list-group">';
-                        myItems.forEach(r => {
-                            const statusClass = r.status === 'Open' ? 'bg-success' : r.status === 'Accepted' ? 'bg-primary' : r.status === 'Pending' ? 'bg-warning text-dark' : 'bg-secondary';
-                            html += `<a href="/HelpRequests/Details/${r.requestId}" class="list-group-item list-group-item-action">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong>${r.title}</strong>
-                                        <br><small class="text-muted">${r.categoryName} &middot; ${new Date(r.createdAt).toLocaleDateString()}</small>
-                                    </div>
-                                    <span class="badge ${statusClass}">${r.status}</span>
-                                </div>
-                            </a>`;
-                        });
-                        html += '</div>';
-                        document.getElementById('requestsList').innerHTML = html;
-                    }
-                }
-            } catch {
-                document.getElementById('requestsList').innerHTML = '<p class="text-muted text-center">Could not load requests.</p>';
+        // Stats
+        document.getElementById('myStats').innerHTML = `
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon" style="color:var(--accent)"><i class="bi bi-person-circle"></i></div>
+                    <div class="stat-value" style="background:linear-gradient(135deg,var(--accent),var(--accent-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${profile.requestsPosted}</div>
+                    <div class="stat-label">Requests Posted</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon" style="color:var(--accent-2)"><i class="bi bi-people-fill"></i></div>
+                    <div class="stat-value" style="background:linear-gradient(135deg,var(--accent-2),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${profile.peopleHelped}</div>
+                    <div class="stat-label">People Helped</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon" style="color:var(--accent-3)"><i class="bi bi-star-fill"></i></div>
+                    <div class="stat-value" style="background:linear-gradient(135deg,var(--accent-3),#e69900);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${profile.averageRating}</div>
+                    <div class="stat-label">Avg Rating</div>
+                </div>
+            </div>`;
+
+        // My Requests
+        const res = await fetch('/api/HelpRequests?pageSize=100');
+        if (res.ok) {
+            const data = await res.json();
+            const items = (data.items || []).filter(r => r.userId === profile.userId);
+            if (!items.length) {
+                document.getElementById('requestsList').innerHTML = '<p class="text-muted text-center py-4">You haven\'t posted any requests yet. <a href="/HelpRequests/Create">Post one now!</a></p>';
+            } else {
+                let html = '<div class="d-flex flex-column gap-2">';
+                items.forEach(r => {
+                    const statusColor = r.status === 'Open' ? 'var(--badge-open-text)' : r.status === 'Accepted' ? 'var(--accent)' : r.status === 'Pending' ? 'var(--accent-3)' : 'var(--text-muted)';
+                    html += `<a href="/HelpRequests/Details/${r.requestId}" class="nh-card p-3 text-decoration-none" style="display:block">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong style="color:var(--text-primary)">${r.title}</strong>
+                                <br><small style="color:var(--text-muted)">${r.categoryName} &middot; ${new Date(r.createdAt).toLocaleDateString()}</small>
+                            </div>
+                            <span style="background:transparent;color:${statusColor};border:1px solid ${statusColor};padding:0.3em 0.75em;border-radius:999px;font-size:0.72rem;font-weight:700">${r.status}</span>
+                        </div>
+                    </a>`;
+                });
+                html += '</div>';
+                document.getElementById('requestsList').innerHTML = html;
             }
+        }
+
+        // My Applications
+        const volRes = await fetch('/api/Volunteer/my-applications');
+        if (volRes.ok) {
+            const apps = await volRes.json();
+            if (!apps.length) {
+                document.getElementById('applicationsList').innerHTML = '<p class="text-muted text-center py-4">You haven\'t applied to volunteer yet.</p>';
+            } else {
+                const statusLabels = {0: 'Pending', 1: 'Accepted', 2: 'Rejected'};
+                let html = '<div class="d-flex flex-column gap-2">';
+                apps.forEach(a => {
+                    const statusText = statusLabels[a.status] || a.status;
+                    const statusColor = statusText === 'Accepted' ? 'var(--badge-open-text)' : statusText === 'Rejected' ? '#ff6b6b' : 'var(--accent-3)';
+                    html += `<a href="/HelpRequests/Details/${a.requestId}" class="nh-card p-3 text-decoration-none" style="display:block">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong style="color:var(--text-primary)">${a.requestTitle || 'Request #' + a.requestId}</strong>
+                                <br><small style="color:var(--text-muted)">Applied ${new Date(a.appliedDate).toLocaleDateString()}</small>
+                            </div>
+                            <span style="background:transparent;color:${statusColor};border:1px solid ${statusColor};padding:0.3em 0.75em;border-radius:999px;font-size:0.72rem;font-weight:700">${statusText}</span>
+                        </div>
+                    </a>`;
+                });
+                html += '</div>';
+                document.getElementById('applicationsList').innerHTML = html;
+            }
+        } else {
+            document.getElementById('applicationsList').innerHTML = '<p class="text-muted text-center py-4">Could not load applications.</p>';
+        }
+
+    } catch(e) {
+        document.getElementById('requestsList').innerHTML = '<p class="text-muted text-center">Could not load activity.</p>';
+    }
 }
 
 document.addEventListener('DOMContentLoaded', loadMyActivity);

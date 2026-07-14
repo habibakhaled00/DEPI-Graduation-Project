@@ -46,16 +46,36 @@
         </div>
     </div>
 
-    <!-- Activity Logs -->
-    <div class="nh-card p-3">
-        <div class="d-flex align-items-center justify-content-between mb-3">
-            <h5 style="font-size:0.85rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.07em;margin:0">
-                <i class="bi bi-clock-history me-1" style="color:var(--accent-3)"></i>Admin Activity Logs
-            </h5>
-            <span id="logCount" class="badge-admin-tag" style="font-size:0.72rem"></span>
+    <!-- Lower Row: Ratings & Logs -->
+    <div class="row g-3 mb-4">
+        <!-- Ratings & Reviews -->
+        <div class="col-lg-7">
+            <div class="nh-card p-3 h-100">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h5 style="font-size:0.85rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.07em;margin:0">
+                        <i class="bi bi-star-fill me-1" style="color:var(--accent-3)"></i>User Ratings & Reviews
+                    </h5>
+                    <span id="ratingCount" class="badge-admin-tag" style="font-size:0.72rem;background:var(--accent-3);color:#fff"></span>
+                </div>
+                <div class="table-responsive" id="ratingsTable" style="max-height: 400px; overflow-y: auto;">
+                    <div class="text-center py-4"><div class="spinner-border spinner-border-sm"></div></div>
+                </div>
+            </div>
         </div>
-        <div class="table-responsive" id="logsTable">
-            <div class="text-center py-4"><div class="spinner-border spinner-border-sm"></div></div>
+
+        <!-- Activity Logs -->
+        <div class="col-lg-5">
+            <div class="nh-card p-3 h-100">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h5 style="font-size:0.85rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.07em;margin:0">
+                        <i class="bi bi-clock-history me-1" style="color:var(--accent)"></i>Admin Activity Logs
+                    </h5>
+                    <span id="logCount" class="badge-admin-tag" style="font-size:0.72rem"></span>
+                </div>
+                <div class="table-responsive" id="logsTable" style="max-height: 400px; overflow-y: auto;">
+                    <div class="text-center py-4"><div class="spinner-border spinner-border-sm"></div></div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -154,9 +174,49 @@
         document.getElementById('logsTable').innerHTML = html;
     }
 
+    async function loadRatings() {
+        const res = await fetch('/api/Admin/ratings');
+        if (!res.ok) return;
+        const ratings = await res.json();
+
+        document.getElementById('ratingCount').textContent = ratings.length + ' reviews';
+
+        if (!ratings.length) {
+            document.getElementById('ratingsTable').innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;" class="text-center py-4">No ratings or reviews found.</p>';
+            return;
+        }
+
+        let html = `<table class="table table-hover mb-0">
+            <thead><tr>
+                <th>Rater</th><th>Target</th><th>Stars</th><th>Comment</th><th>Date</th>
+            </tr></thead><tbody>`;
+        ratings.forEach(r => {
+            const stars = '★'.repeat(r.score) + '☆'.repeat(5 - r.score);
+            html += `<tr>
+                <td style="font-weight:600;color:var(--text-primary);font-size:0.82rem">${escapeHtml(r.raterName)}</td>
+                <td style="color:var(--text-secondary);font-size:0.82rem">${escapeHtml(r.ratedUserName)}</td>
+                <td class="text-warning" style="letter-spacing:1px;font-size:0.85rem">${stars}</td>
+                <td style="color:var(--text-muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:0.82rem" title="${escapeHtml(r.comment || '')}">
+                    ${escapeHtml(r.comment || '—')}
+                </td>
+                <td style="color:var(--text-muted);font-size:0.78rem">${new Date(r.createdAt).toLocaleDateString()}</td>
+            </tr>`;
+        });
+        html += '</tbody></table>';
+        document.getElementById('ratingsTable').innerHTML = html;
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        const d = document.createElement("div");
+        d.textContent = str;
+        return d.innerHTML;
+    }
+
     document.addEventListener('DOMContentLoaded', async () => {
         await loadReports();
         await loadLogs();
+        await loadRatings();
     });
 </script>
 }

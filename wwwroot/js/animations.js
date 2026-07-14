@@ -276,6 +276,77 @@
     };
 
     /* ─────────────────────────────────────────────────────────────
+     * 10b. CONFIRMATION DIALOG HELPER  (global)
+     * ───────────────────────────────────────────────────────────── */
+    window.nhConfirm = function (message) {
+        return new Promise((resolve) => {
+            if (!document.getElementById('nh-confirm-styles')) {
+                const style = document.createElement('style');
+                style.id = 'nh-confirm-styles';
+                style.innerHTML = `
+                    @keyframes nhFadeIn { from { opacity: 0; } to { opacity: 1; } }
+                    @keyframes nhFadeOut { from { opacity: 1; } to { opacity: 0; } }
+                    @keyframes nhSlideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+                    @keyframes nhSlideDown { from { transform: translateY(0); opacity: 1; } to { transform: translateY(20px); opacity: 0; } }
+                `;
+                document.head.appendChild(style);
+            }
+
+            const backdrop = document.createElement('div');
+            backdrop.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99999;
+                background: rgba(13, 15, 26, 0.7);
+                backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+                display: flex; align-items: center; justify-content: center;
+                animation: nhFadeIn 0.2s ease forwards;
+            `;
+
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                background: var(--bg-card);
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                padding: 2.2rem 2rem;
+                max-width: 420px;
+                width: 90%;
+                text-align: center;
+                box-shadow: var(--shadow);
+                animation: nhSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+            `;
+
+            modal.innerHTML = `
+                <div class="mb-3" style="font-size: 2.8rem; color: var(--accent-3); display: flex; justify-content: center; align-items: center;">
+                    <i class="bi bi-question-circle-fill"></i>
+                </div>
+                <h5 class="mb-4" style="color: var(--text-primary); font-weight: 700; line-height: 1.45; font-size: 1.1rem; margin: 0;">${message}</h5>
+                <div class="d-flex gap-2 justify-content-center mt-4">
+                    <button class="btn btn-outline-secondary px-4 py-2" id="nhConfirmCancel" style="border-radius: var(--radius-sm); font-weight: 600; font-size: 0.88rem;">Cancel</button>
+                    <button class="btn btn-primary px-4 py-2" id="nhConfirmOk" style="background: var(--accent); border-color: var(--accent); border-radius: var(--radius-sm); font-weight: 600; font-size: 0.88rem;">Confirm</button>
+                </div>
+            `;
+
+            backdrop.appendChild(modal);
+            document.body.appendChild(backdrop);
+
+            const cancelBtn = modal.querySelector('#nhConfirmCancel');
+            const okBtn = modal.querySelector('#nhConfirmOk');
+
+            const close = (result) => {
+                backdrop.style.animation = 'nhFadeOut 0.2s ease forwards';
+                modal.style.animation = 'nhSlideDown 0.2s ease forwards';
+                backdrop.addEventListener('animationend', () => {
+                    backdrop.remove();
+                    resolve(result);
+                });
+            };
+
+            cancelBtn.addEventListener('click', () => close(false));
+            okBtn.addEventListener('click', () => close(true));
+        });
+    };
+
+
+    /* ─────────────────────────────────────────────────────────────
      * INIT
      * ───────────────────────────────────────────────────────────── */
     document.addEventListener('DOMContentLoaded', () => {

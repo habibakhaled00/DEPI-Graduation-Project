@@ -4,15 +4,13 @@
 }
 
 <div class="container py-4" style="max-width: 800px;">
-    <a asp-controller="HelpRequests" asp-action="Index" class="btn btn-link ps-0 mb-3">
+    <a asp-controller="HelpRequests" asp-action="Index" class="quick-action-btn mb-3" style="width: fit-content; padding: 0.5rem 1rem;">
         <i class="bi bi-arrow-left"></i> Back to board
     </a>
 
-    <div id="detailsCard" class="card shadow-sm">
-        <div class="card-body">
-            <div class="text-center py-5" id="loadingSpinner">
-                <div class="spinner-border text-primary"></div>
-            </div>
+    <div id="detailsCard" class="nh-card p-4">
+        <div class="text-center py-5" id="loadingSpinner">
+            <div class="spinner-border" style="color:var(--accent)"></div>
         </div>
     </div>
 

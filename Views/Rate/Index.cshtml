@@ -1,50 +1,52 @@
 @{ ViewData["Title"] = "Rate"; int requestId = ViewBag.RequestId; }
 
 <div class="container py-4" style="max-width:550px;">
-    <a href="/HelpRequests/Details/@requestId" class="btn btn-link ps-0 mb-3">
+    <a href="/HelpRequests/Details/@requestId" class="quick-action-btn mb-3" style="width: fit-content; padding: 0.5rem 1rem;">
         <i class="bi bi-arrow-left"></i> Back to request
     </a>
 
-    <div class="card shadow-sm">
-        <div class="card-body p-4">
-            <h3 class="text-center mb-2"><i class="bi bi-star-fill text-warning"></i> Rate Helper</h3>
-            <p id="ratingTarget" class="text-center text-muted mb-4"></p>
-            
-            <div id="rateAlert" class="alert d-none"></div>
-
-            <form id="rateForm">
-                <input type="hidden" id="requestId" value="@requestId">
-                <input type="hidden" id="ratedUserId" value="">
-
-                <!-- Star selection -->
-                <div class="mb-4 text-center">
-                    <label class="form-label d-block fw-bold">How would you rate them?</label>
-                    <div id="stars" class="d-flex justify-content-center gap-3 mt-2">
-                        <span class="bi bi-star fs-1" style="cursor:pointer;transition:all .15s" data-v="1"></span>
-                        <span class="bi bi-star fs-1" style="cursor:pointer;transition:all .15s" data-v="2"></span>
-                        <span class="bi bi-star fs-1" style="cursor:pointer;transition:all .15s" data-v="3"></span>
-                        <span class="bi bi-star fs-1" style="cursor:pointer;transition:all .15s" data-v="4"></span>
-                        <span class="bi bi-star fs-1" style="cursor:pointer;transition:all .15s" data-v="5"></span>
-                    </div>
-                    <input type="hidden" id="score" value="0">
-                    <small id="scoreLabel" class="text-muted mt-1 d-block"></small>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Quick comment</label>
-                    <textarea class="form-control" id="comment" rows="2" placeholder="How was the experience?"></textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Detailed review <span class="text-muted fw-normal">(optional)</span></label>
-                    <textarea class="form-control" id="reviewContent" rows="3" placeholder="Write a longer review if you'd like..."></textarea>
-                </div>
-
-                <button type="submit" class="btn btn-warning w-100 btn-lg" id="submitBtn">
-                    <i class="bi bi-send"></i> Submit Rating
-                </button>
-            </form>
+    <div class="nh-card p-4">
+        <div class="text-center mb-4">
+            <div style="font-size:2.5rem; color: var(--accent-3);"><i class="bi bi-star-fill"></i></div>
+            <h3 class="mt-2" style="color: var(--text-primary); font-weight: 800;">Rate User</h3>
+            <p id="ratingTarget" style="color: var(--text-muted); font-size: 0.9rem;" class="mb-0"></p>
         </div>
+
+        <div id="rateAlert" class="alert d-none"></div>
+
+        <form id="rateForm">
+            <input type="hidden" id="requestId" value="@requestId">
+            <input type="hidden" id="ratedUserId" value="">
+
+            <!-- Star selection -->
+            <div class="mb-4 text-center">
+                <label class="form-label d-block fw-bold" style="color: var(--text-secondary);">How would you rate them?</label>
+                <div id="stars" class="d-flex justify-content-center gap-3 mt-2">
+                    <span class="bi bi-star fs-1" style="cursor:pointer;transition:color .15s" data-v="1"></span>
+                    <span class="bi bi-star fs-1" style="cursor:pointer;transition:color .15s" data-v="2"></span>
+                    <span class="bi bi-star fs-1" style="cursor:pointer;transition:color .15s" data-v="3"></span>
+                    <span class="bi bi-star fs-1" style="cursor:pointer;transition:color .15s" data-v="4"></span>
+                    <span class="bi bi-star fs-1" style="cursor:pointer;transition:color .15s" data-v="5"></span>
+                </div>
+                <input type="hidden" id="score" value="0">
+                <small id="scoreLabel" class="mt-2 d-block" style="color: var(--text-muted);"></small>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold" style="color: var(--text-secondary);">Quick comment</label>
+                <textarea class="form-control" id="comment" rows="2" placeholder="How was the experience?"></textarea>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-bold" style="color: var(--text-secondary);">Detailed review <span style="color: var(--text-muted); font-weight: 400;">(optional)</span></label>
+                <textarea class="form-control" id="reviewContent" rows="3" placeholder="Write a longer review if you'd like..."></textarea>
+            </div>
+
+            <button type="submit" class="btn w-100 btn-lg" id="submitBtn"
+                    style="background: linear-gradient(135deg, var(--accent-3), #e69900); color: #fff; font-weight: 700; border: none; border-radius: var(--radius-sm);">
+                <i class="bi bi-send me-1"></i> Submit Rating
+            </button>
+        </form>
     </div>
 </div>
 

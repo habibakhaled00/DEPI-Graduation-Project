@@ -1,0 +1,292 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{7BC79200-CD38-4D57-81B5-22678914D5EC}|NeighborHelp.csproj|c:\\users\\asem\\documents\\github\\depi-graduation-project\\views\\account\\settings.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{7BC79200-CD38-4D57-81B5-22678914D5EC}|NeighborHelp.csproj|solutionrelative:views\\account\\settings.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7BC79200-CD38-4D57-81B5-22678914D5EC}|NeighborHelp.csproj|c:\\users\\asem\\documents\\github\\depi-graduation-project\\views\\account\\myactivity.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{7BC79200-CD38-4D57-81B5-22678914D5EC}|NeighborHelp.csproj|solutionrelative:views\\account\\myactivity.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7BC79200-CD38-4D57-81B5-22678914D5EC}|NeighborHelp.csproj|c:\\users\\asem\\documents\\github\\depi-graduation-project\\views\\notifications\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{7BC79200-CD38-4D57-81B5-22678914D5EC}|NeighborHelp.csproj|solutionrelative:views\\notifications\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7BC79200-CD38-4D57-81B5-22678914D5EC}|NeighborHelp.csproj|c:\\users\\asem\\documents\\github\\depi-graduation-project\\dtos\\authdtos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7BC79200-CD38-4D57-81B5-22678914D5EC}|NeighborHelp.csproj|solutionrelative:dtos\\authdtos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7BC79200-CD38-4D57-81B5-22678914D5EC}|NeighborHelp.csproj|c:\\users\\asem\\documents\\github\\depi-graduation-project\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7BC79200-CD38-4D57-81B5-22678914D5EC}|NeighborHelp.csproj|solutionrelative:controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7BC79200-CD38-4D57-81B5-22678914D5EC}|NeighborHelp.csproj|c:\\users\\asem\\documents\\github\\depi-graduation-project\\migrations\\20260712223457_latest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7BC79200-CD38-4D57-81B5-22678914D5EC}|NeighborHelp.csproj|solutionrelative:migrations\\20260712223457_latest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7BC79200-CD38-4D57-81B5-22678914D5EC}|NeighborHelp.csproj|c:\\users\\asem\\documents\\github\\depi-graduation-project\\controllers\\notificationsapicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7BC79200-CD38-4D57-81B5-22678914D5EC}|NeighborHelp.csproj|solutionrelative:controllers\\notificationsapicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7BC79200-CD38-4D57-81B5-22678914D5EC}|NeighborHelp.csproj|c:\\users\\asem\\documents\\github\\depi-graduation-project\\controllers\\userprofilecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7BC79200-CD38-4D57-81B5-22678914D5EC}|NeighborHelp.csproj|solutionrelative:controllers\\userprofilecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7BC79200-CD38-4D57-81B5-22678914D5EC}|NeighborHelp.csproj|c:\\users\\asem\\documents\\github\\depi-graduation-project\\controllers\\ratingscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7BC79200-CD38-4D57-81B5-22678914D5EC}|NeighborHelp.csproj|solutionrelative:controllers\\ratingscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7BC79200-CD38-4D57-81B5-22678914D5EC}|NeighborHelp.csproj|c:\\users\\asem\\documents\\github\\depi-graduation-project\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7BC79200-CD38-4D57-81B5-22678914D5EC}|NeighborHelp.csproj|solutionrelative:controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7BC79200-CD38-4D57-81B5-22678914D5EC}|NeighborHelp.csproj|c:\\users\\asem\\documents\\github\\depi-graduation-project\\migrations\\20260706221914_fullmerge.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7BC79200-CD38-4D57-81B5-22678914D5EC}|NeighborHelp.csproj|solutionrelative:migrations\\20260706221914_fullmerge.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7BC79200-CD38-4D57-81B5-22678914D5EC}|NeighborHelp.csproj|c:\\users\\asem\\documents\\github\\depi-graduation-project\\services\\notificationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7BC79200-CD38-4D57-81B5-22678914D5EC}|NeighborHelp.csproj|solutionrelative:services\\notificationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\habiba khaled\\OneDrive\\Desktop\\final project\\NeighborHelp\\Migrations\\20260629191435_TealRedesign.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7BC79200-CD38-4D57-81B5-22678914D5EC}|NeighborHelp.csproj|c:\\users\\asem\\documents\\github\\depi-graduation-project\\wwwroot\\css\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{7BC79200-CD38-4D57-81B5-22678914D5EC}|NeighborHelp.csproj|solutionrelative:wwwroot\\css\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\habiba khaled\\OneDrive\\Desktop\\final project\\NeighborHelp\\Migrations\\20260628234121_InitialCreate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7BC79200-CD38-4D57-81B5-22678914D5EC}|NeighborHelp.csproj|c:\\users\\asem\\documents\\github\\depi-graduation-project\\migrations\\20260712222148_updatedmerge.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7BC79200-CD38-4D57-81B5-22678914D5EC}|NeighborHelp.csproj|solutionrelative:migrations\\20260712222148_updatedmerge.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1624930799:0:{83107a3e-496a-485e-b455-16ddb978e55e}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Settings.cshtml",
+              "DocumentMoniker": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\Views\\Account\\Settings.cshtml",
+              "RelativeDocumentMoniker": "Views\\Account\\Settings.cshtml",
+              "ToolTip": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\Views\\Account\\Settings.cshtml",
+              "RelativeToolTip": "Views\\Account\\Settings.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-07-14T17:11:25.345Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MyActivity.cshtml",
+              "DocumentMoniker": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\Views\\Account\\MyActivity.cshtml",
+              "RelativeDocumentMoniker": "Views\\Account\\MyActivity.cshtml",
+              "ToolTip": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\Views\\Account\\MyActivity.cshtml",
+              "RelativeToolTip": "Views\\Account\\MyActivity.cshtml",
+              "ViewState": "AgIAADEAAAAAAAAAAAAAwEQAAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-07-14T17:11:25.362Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\Views\\Notifications\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\Notifications\\Index.cshtml",
+              "ToolTip": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\Views\\Notifications\\Index.cshtml",
+              "RelativeToolTip": "Views\\Notifications\\Index.cshtml",
+              "ViewState": "AgIAAEUAAAAAAAAAAAAAAFQAAACoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-07-14T17:11:25.371Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "AuthDtos.cs",
+              "DocumentMoniker": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\DTOs\\AuthDtos.cs",
+              "RelativeDocumentMoniker": "DTOs\\AuthDtos.cs",
+              "ToolTip": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\DTOs\\AuthDtos.cs",
+              "RelativeToolTip": "DTOs\\AuthDtos.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAE0AAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-14T17:11:25.381Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AuthController.cs",
+              "ToolTip": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "Controllers\\AuthController.cs",
+              "ViewState": "AgIAAHYAAAAAAAAAAAAqwIYAAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-14T17:11:25.394Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "20260712223457_Latest.cs",
+              "DocumentMoniker": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\Migrations\\20260712223457_Latest.cs",
+              "RelativeDocumentMoniker": "Migrations\\20260712223457_Latest.cs",
+              "ToolTip": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\Migrations\\20260712223457_Latest.cs",
+              "RelativeToolTip": "Migrations\\20260712223457_Latest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-14T17:11:25.407Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "20260712222148_UpdatedMerge.cs",
+              "DocumentMoniker": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\Migrations\\20260712222148_UpdatedMerge.cs",
+              "RelativeDocumentMoniker": "Migrations\\20260712222148_UpdatedMerge.cs",
+              "ToolTip": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\Migrations\\20260712222148_UpdatedMerge.cs",
+              "RelativeToolTip": "Migrations\\20260712222148_UpdatedMerge.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-14T17:11:25.415Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "NotificationsApiController.cs",
+              "DocumentMoniker": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\Controllers\\NotificationsApiController.cs",
+              "RelativeDocumentMoniker": "Controllers\\NotificationsApiController.cs",
+              "ToolTip": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\Controllers\\NotificationsApiController.cs",
+              "RelativeToolTip": "Controllers\\NotificationsApiController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACcAAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-14T17:11:25.423Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "UserProfileController.cs",
+              "DocumentMoniker": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\Controllers\\UserProfileController.cs",
+              "RelativeDocumentMoniker": "Controllers\\UserProfileController.cs",
+              "ToolTip": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\Controllers\\UserProfileController.cs",
+              "RelativeToolTip": "Controllers\\UserProfileController.cs",
+              "ViewState": "AgIAABEAAAAAAAAAAAAQwBAAAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-14T17:11:25.431Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "RatingsController.cs",
+              "DocumentMoniker": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\Controllers\\RatingsController.cs",
+              "RelativeDocumentMoniker": "Controllers\\RatingsController.cs",
+              "ToolTip": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\Controllers\\RatingsController.cs",
+              "RelativeToolTip": "Controllers\\RatingsController.cs",
+              "ViewState": "AgIAABYAAAAAAAAAAAA1wCEAAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-14T17:11:25.44Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "AdminController.cs",
+              "DocumentMoniker": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\Controllers\\AdminController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AdminController.cs",
+              "ToolTip": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\Controllers\\AdminController.cs",
+              "RelativeToolTip": "Controllers\\AdminController.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAABUAAAAPAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-14T17:11:25.448Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "20260706221914_FullMerge.cs",
+              "DocumentMoniker": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\Migrations\\20260706221914_FullMerge.cs",
+              "RelativeDocumentMoniker": "Migrations\\20260706221914_FullMerge.cs",
+              "ToolTip": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\Migrations\\20260706221914_FullMerge.cs",
+              "RelativeToolTip": "Migrations\\20260706221914_FullMerge.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-14T17:11:25.458Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "NotificationService.cs",
+              "DocumentMoniker": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\Services\\NotificationService.cs",
+              "RelativeDocumentMoniker": "Services\\NotificationService.cs",
+              "ToolTip": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\Services\\NotificationService.cs",
+              "RelativeToolTip": "Services\\NotificationService.cs",
+              "ViewState": "AgIAABsAAAAAAAAAAAAewCYAAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-14T17:11:25.47Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "site.css",
+              "DocumentMoniker": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\wwwroot\\css\\site.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\site.css",
+              "ToolTip": "C:\\Users\\Asem\\Documents\\GitHub\\DEPI-Graduation-Project\\wwwroot\\css\\site.css",
+              "RelativeToolTip": "wwwroot\\css\\site.css",
+              "ViewState": "AgIAABUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-07-14T17:11:25.48Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "20260629191435_TealRedesign.cs",
+              "DocumentMoniker": "C:\\Users\\habiba khaled\\OneDrive\\Desktop\\final project\\NeighborHelp\\Migrations\\20260629191435_TealRedesign.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\..\\habiba khaled\\OneDrive\\Desktop\\final project\\NeighborHelp\\Migrations\\20260629191435_TealRedesign.cs",
+              "ToolTip": "C:\\Users\\habiba khaled\\OneDrive\\Desktop\\final project\\NeighborHelp\\Migrations\\20260629191435_TealRedesign.cs",
+              "RelativeToolTip": "..\\..\\..\\..\\habiba khaled\\OneDrive\\Desktop\\final project\\NeighborHelp\\Migrations\\20260629191435_TealRedesign.cs",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-14T17:11:25.55Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "20260628234121_InitialCreate.cs",
+              "DocumentMoniker": "C:\\Users\\habiba khaled\\OneDrive\\Desktop\\final project\\NeighborHelp\\Migrations\\20260628234121_InitialCreate.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\..\\habiba khaled\\OneDrive\\Desktop\\final project\\NeighborHelp\\Migrations\\20260628234121_InitialCreate.cs",
+              "ToolTip": "C:\\Users\\habiba khaled\\OneDrive\\Desktop\\final project\\NeighborHelp\\Migrations\\20260628234121_InitialCreate.cs",
+              "RelativeToolTip": "..\\..\\..\\..\\habiba khaled\\OneDrive\\Desktop\\final project\\NeighborHelp\\Migrations\\20260628234121_InitialCreate.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAyAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-14T17:11:25.559Z"
+            }
+          ]
+        },
+        {
+          "DockedWidth": 1156,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

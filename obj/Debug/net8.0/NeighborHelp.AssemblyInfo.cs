@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("NeighborHelp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3eb9528ebe6660bfda8ee67dc35d58e8b046d7e8")]
 [assembly: System.Reflection.AssemblyProductAttribute("NeighborHelp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("NeighborHelp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

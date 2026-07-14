@@ -28,6 +28,7 @@ namespace NeighborHelp.Controllers
             [FromQuery] string? search,
             [FromQuery] int? categoryId,
             [FromQuery] RequestStatus? status,
+            [FromQuery] string? myVolunteerStatus,
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 12)
         {
@@ -53,7 +54,36 @@ namespace NeighborHelp.Controllers
 
             if (status.HasValue)
             {
-                query = query.Where(h => h.Status == status.Value);
+                if (status.Value == RequestStatus.Pending && CurrentUID != null)
+                {
+                    // Include actual Pending requests PLUS any request where
+                    // the current user's own volunteer application is still Pending
+                    // (even if the overall request is now Accepted by someone else)
+                    query = query.Where(h =>
+                        h.Status == RequestStatus.Pending ||
+                        h.VolunteerRequests.Any(v =>
+                            v.UserId == CurrentUID &&
+                            v.Status == VolunteerStatus.Pending));
+                }
+                else if (status.Value == RequestStatus.Accepted && CurrentUID != null)
+                {
+                    // Exclude requests where the current user was explicitly rejected
+                    query = query.Where(h => h.Status == RequestStatus.Accepted &&
+                        !h.VolunteerRequests.Any(v => v.UserId == CurrentUID && v.Status == VolunteerStatus.Rejected));
+                }
+                else
+                {
+                    query = query.Where(h => h.Status == status.Value);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(myVolunteerStatus) && CurrentUID != null)
+            {
+                if (myVolunteerStatus == "Rejected")
+                {
+                    query = query.Where(h => h.VolunteerRequests.Any(v =>
+                        v.UserId == CurrentUID && v.Status == VolunteerStatus.Rejected));
+                }
             }
 
             query = query.OrderByDescending(h => h.CreatedAt);

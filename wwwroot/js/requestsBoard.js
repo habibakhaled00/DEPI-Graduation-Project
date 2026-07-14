@@ -30,7 +30,11 @@ async function loadRequests() {
     });
     if (searchInput.value.trim()) params.append("search", searchInput.value.trim());
     if (categoryFilter.value) params.append("categoryId", categoryFilter.value);
-    if (statusFilter.value) params.append("status", statusFilter.value);
+    if (statusFilter.value === "Rejected") {
+        params.append("myVolunteerStatus", "Rejected");
+    } else if (statusFilter.value) {
+        params.append("status", statusFilter.value);
+    }
 
     try {
         const res = await fetch(`${apiBase}?${params.toString()}`);
@@ -63,8 +67,12 @@ function renderRequests(requests) {
             `Posted by ${r.requesterName} • ${new Date(r.createdAt).toLocaleDateString()} • ${r.volunteerCount} applicant(s)`;
 
         const badge = node.querySelector(".req-status-badge");
-        badge.textContent = r.status;
-        badge.classList.add(...statusClasses(r.status));
+        const displayStatus =
+            r.currentUserVolunteerStatus === "Pending"  ? "Pending"  :
+            r.currentUserVolunteerStatus === "Rejected" ? "Rejected" :
+            r.status;
+        badge.textContent = displayStatus;
+        badge.classList.add(...statusClasses(displayStatus));
 
         node.querySelector(".req-details-btn").href = `/HelpRequests/Details/${r.requestId}`;
 
@@ -114,7 +122,8 @@ function statusClasses(status) {
         'Pending':   ['status-badge', 'status-pending'],
         'Accepted':  ['status-badge', 'status-accepted'],
         'Completed': ['status-badge', 'status-completed'],
-        'Cancelled': ['status-badge', 'status-accepted'], // re-use style
+        'Cancelled': ['status-badge', 'status-accepted'],
+        'Rejected':  ['status-badge', 'status-rejected'],
     };
     return map[status] || ['status-badge', 'status-pending'];
 }

@@ -1,6 +1,26 @@
 @{
     ViewData["Title"] = "New Help Request";
     var categories = ViewBag.Categories as List<NeighborHelp.Models.Category>;
+
+    // Fallback categories if DB is empty or not yet seeded
+    var fallbackCategories = new[]
+    {
+        new { Id = 1, Name = "🛒 Groceries & Errands" },
+        new { Id = 2, Name = "🔧 Home Repair" },
+        new { Id = 3, Name = "📦 Moving & Heavy Lifting" },
+        new { Id = 4, Name = "💻 Tech Support" },
+        new { Id = 5, Name = "📚 Tutoring & Mentoring" },
+        new { Id = 6, Name = "🐾 Pet Care" },
+        new { Id = 7, Name = "👴 Elderly Assistance" },
+        new { Id = 8, Name = "🌿 Gardening & Yard Work" },
+        new { Id = 9, Name = "🚗 Transportation" },
+        new { Id = 10, Name = "🍽️ Meal Preparation" },
+        new { Id = 11, Name = "🧹 Cleaning & Household" },
+        new { Id = 12, Name = "👶 Childcare" },
+        new { Id = 13, Name = "❓ Other" }
+    };
+
+    bool useDb = categories != null && categories.Count > 0;
 }
 
 <style>
@@ -12,15 +32,16 @@
     }
 
     .login-wrapper {
-        min-height: calc(100vh - 80px);
+        padding: 3rem 1.5rem;
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: center;
         position: relative;
         background: transparent !important;
-        padding: 2rem;
         width: 100%;
+        min-height: calc(100vh - 80px);
     }
+
 
     .auth-card {
         width: 100%;
@@ -64,11 +85,18 @@
                 <label class="form-label" style="font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary);">Category</label>
                 <select class="form-select" id="categoryId" required>
                     <option value="">-- Select Category --</option>
-                    @if (categories != null)
+                    @if (useDb)
                     {
-                        foreach (var c in categories)
+                        foreach (var c in categories!)
                         {
                             <option value="@c.CategoryId">@c.Name</option>
+                        }
+                    }
+                    else
+                    {
+                        foreach (var c in fallbackCategories)
+                        {
+                            <option value="@c.Id">@c.Name</option>
                         }
                     }
                 </select>

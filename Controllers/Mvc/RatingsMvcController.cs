@@ -11,7 +11,7 @@ namespace NeighborHelp.Controllers.Mvc
         public IActionResult Index(int requestId)
         {
             ViewBag.RequestId = requestId;
-            return View();
+            return View("~/Views/Rate/Index.cshtml");
         }
     }
 }

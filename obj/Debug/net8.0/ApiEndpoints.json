@@ -47,6 +47,16 @@
   },
   {
     "ContainingType": "NeighborHelp.Controllers.AdminController",
+    "Method": "GetRatings",
+    "RelativePath": "api/Admin/ratings",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "NeighborHelp.Controllers.AdminController",
     "Method": "GetAllRequests",
     "RelativePath": "api/Admin/requests",
     "HttpMethod": "GET",
@@ -219,6 +229,11 @@
       },
       {
         "Name": "status",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "myVolunteerStatus",
         "Type": "System.String",
         "IsRequired": false
       },

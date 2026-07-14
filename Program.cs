@@ -109,6 +109,27 @@ using (var scope = app.Services.CreateScope())
         if (result.Succeeded)
             await userManager.AddToRoleAsync(admin, "Admin");
     }
+
+    // Seed default categories if the table is empty
+    if (!db.Categories.Any())
+    {
+        db.Categories.AddRange(
+            new NeighborHelp.Models.Category { Name = "Groceries & Errands" },
+            new NeighborHelp.Models.Category { Name = "Home Repair" },
+            new NeighborHelp.Models.Category { Name = "Moving & Heavy Lifting" },
+            new NeighborHelp.Models.Category { Name = "Tech Support" },
+            new NeighborHelp.Models.Category { Name = "Tutoring & Mentoring" },
+            new NeighborHelp.Models.Category { Name = "Pet Care" },
+            new NeighborHelp.Models.Category { Name = "Elderly Assistance" },
+            new NeighborHelp.Models.Category { Name = "Gardening & Yard Work" },
+            new NeighborHelp.Models.Category { Name = "Transportation" },
+            new NeighborHelp.Models.Category { Name = "Meal Preparation" },
+            new NeighborHelp.Models.Category { Name = "Cleaning & Household" },
+            new NeighborHelp.Models.Category { Name = "Childcare" },
+            new NeighborHelp.Models.Category { Name = "Other" }
+        );
+        await db.SaveChangesAsync();
+    }
 }
 
 if (!app.Environment.IsDevelopment())

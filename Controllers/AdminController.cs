@@ -30,6 +30,28 @@ namespace NeighborHelp.Controllers
         {
             var sixMonthsAgo = DateTime.UtcNow.AddMonths(-6);
 
+            var monthlyDb = await _db.HelpRequests
+                .Where(h => h.CreatedAt >= sixMonthsAgo)
+                .GroupBy(h => new { h.CreatedAt.Year, h.CreatedAt.Month })
+                .Select(g => new
+                {
+                    Year = g.Key.Year,
+                    Month = g.Key.Month,
+                    Requests = g.Count(),
+                    Completed = g.Count(h => h.Status == RequestStatus.Accepted)
+                })
+                .ToListAsync();
+
+            var monthlyStats = monthlyDb
+                .Select(s => new MonthlyStatDto
+                {
+                    Month = s.Year + "-" + s.Month.ToString("D2"),
+                    Requests = s.Requests,
+                    Completed = s.Completed
+                })
+                .OrderBy(s => s.Month)
+                .ToList();
+
             var stats = new DashboardData
             {
                 TotalUsers = await _db.Users.CountAsync(),
@@ -46,17 +68,7 @@ namespace NeighborHelp.Controllers
                     .Select(g => new CategoryStatDto { Name = g.Key, Count = g.Count() })
                     .ToListAsync(),
 
-                MonthlyStats = await _db.HelpRequests
-                    .Where(h => h.CreatedAt >= sixMonthsAgo)
-                    .GroupBy(h => new { h.CreatedAt.Year, h.CreatedAt.Month })
-                    .Select(g => new MonthlyStatDto
-                    {
-                        Month = g.Key.Year + "-" + g.Key.Month.ToString("D2"),
-                        Requests = g.Count(),
-                        Completed = g.Count(h => h.Status == RequestStatus.Accepted)
-                    })
-                    .OrderBy(s => s.Month)
-                    .ToListAsync()
+                MonthlyStats = monthlyStats
             };
 
             return Ok(stats);
@@ -99,6 +111,11 @@ namespace NeighborHelp.Controllers
         [HttpPut("users/{userId}/toggle-status")]
         public async Task<IActionResult> ToggleUserStatus(string userId)
         {
+            if (userId == CurrentUID)
+            {
+                return BadRequest(new { message = "You cannot activate or deactivate your own account." });
+            }
+
             var user = await _user.FindByIdAsync(userId);
             if (user == null) return NotFound();
 
@@ -250,6 +267,31 @@ namespace NeighborHelp.Controllers
             }).OrderByDescending(r => r.LastMessage);
 
             return Ok(result);
+        }
+
+        // ── Admin: List all ratings & reviews ─────────────────────
+        [HttpGet("ratings")]
+        public async Task<IActionResult> GetRatings()
+        {
+            var ratings = await _db.Ratings
+                .Include(r => r.Rater)
+                .Include(r => r.RatedUser)
+                .Include(r => r.Review)
+                .OrderByDescending(r => r.CreatedAt)
+                .Select(r => new
+                {
+                    r.RatingId,
+                    r.Score,
+                    r.Comment,
+                    RaterName = r.Rater!.FullName,
+                    RatedUserName = r.RatedUser!.FullName,
+                    r.CreatedAt,
+                    ReviewContent = r.Review != null ? r.Review.Content : null,
+                    r.RequestId
+                })
+                .ToListAsync();
+
+            return Ok(ratings);
         }
     }
 }

@@ -1,5 +1,7 @@
+@using System.Security.Claims
 @{
     ViewData["Title"] = "User Management";
+    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "";
 }
 
 <div class="container py-4 fade-up">
@@ -50,6 +52,7 @@
 
 @section Scripts {
 <script>
+    const currentUserId = "@currentUserId";
     let allUsers = [];
     let debounceTimer;
 
@@ -111,11 +114,14 @@
                 ? '<span class="badge-open">Active</span>'
                 : '<span style="background:var(--badge-admin);color:var(--badge-admin-text);padding:0.35em 0.75em;border-radius:999px;font-size:0.72rem;font-weight:600">Inactive</span>';
 
-            const actionBtn = u.isActive
-                ? `<button class="btn btn-outline-danger btn-sm" onclick="toggleUser('${u.userId}', this)">
-                    <i class="bi bi-person-x me-1"></i>Deactivate</button>`
-                : `<button class="btn btn-outline-success btn-sm" onclick="toggleUser('${u.userId}', this)">
-                    <i class="bi bi-person-check me-1"></i>Activate</button>`;
+            const actionBtn = u.userId === currentUserId
+                ? `<button class="btn btn-outline-secondary btn-sm" disabled title="You cannot deactivate your own account.">
+                    <i class="bi bi-person me-1"></i>Self</button>`
+                : (u.isActive
+                    ? `<button class="btn btn-outline-danger btn-sm" onclick="toggleUser('${u.userId}', this)">
+                        <i class="bi bi-person-x me-1"></i>Deactivate</button>`
+                    : `<button class="btn btn-outline-success btn-sm" onclick="toggleUser('${u.userId}', this)">
+                        <i class="bi bi-person-check me-1"></i>Activate</button>`);
 
             html += `<tr>
                 <td>
@@ -142,7 +148,9 @@
     }
 
     async function toggleUser(id, btn) {
-        if (!confirm('Change this user\'s status?')) return;
+        const message = "Are you sure you want to change this user's status?";
+        const ok = window.nhConfirm ? await window.nhConfirm(message) : confirm(message);
+        if (!ok) return;
         btn.disabled = true;
         await fetch(`/api/Admin/users/${id}/toggle-status`, { method: 'PUT' });
         loadUsers(document.getElementById('searchInput').value.trim());

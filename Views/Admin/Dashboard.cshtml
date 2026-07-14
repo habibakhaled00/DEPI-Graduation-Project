@@ -88,17 +88,17 @@
 
     function buildStatCards() {
         const stats = [
-            { icon:'bi-people-fill',    label:'Total Users',    value: DASH.totalUsers,       color:'#6c63ff' },
-            { icon:'bi-card-list',      label:'Total Requests', value: DASH.totalRequests,    color:'#06b6d4' },
-            { icon:'bi-circle',         label:'Open',           value: DASH.openRequests,     color:'#00d4aa' },
-            { icon:'bi-check-circle',   label:'Accepted',      value: DASH.completedRequests,color:'#8b84ff' },
-            { icon:'bi-star-fill',      label:'Avg Rating',     value: DASH.averageRating,    color:'#ffaa00' },
-            { icon:'bi-chat-dots-fill', label:'Messages',       value: DASH.totalMessages,    color:'#f43f5e' },
+            { icon:'bi-people-fill',    label:'Total Users',    value: DASH.totalUsers,       color:'#6c63ff', link: '/Admin/Users' },
+            { icon:'bi-card-list',      label:'Total Requests', value: DASH.totalRequests,    color:'#06b6d4', link: '/Admin/Requests' },
+            { icon:'bi-circle',         label:'Open',           value: DASH.openRequests,     color:'#00d4aa', link: '/Admin/Requests' },
+            { icon:'bi-check-circle',   label:'Accepted',      value: DASH.completedRequests,color:'#8b84ff', link: '/Admin/Requests' },
+            { icon:'bi-star-fill',      label:'Avg Rating',     value: DASH.averageRating,    color:'#ffaa00', link: '/Admin/Reports' },
+            { icon:'bi-chat-dots-fill', label:'Messages',       value: DASH.totalMessages,    color:'#f43f5e', link: '/Admin/Chats' },
         ];
 
         document.getElementById('statsCards').innerHTML = stats.map(s => `
             <div class="col-6 col-md-4 col-lg-2">
-                <div class="stat-card">
+                <div class="stat-card" onclick="location.href='${s.link}'" style="cursor:pointer">
                     <div class="stat-icon" style="color:${s.color}"><i class="bi ${s.icon}"></i></div>
                     <div class="stat-value count-up"
                          style="background:linear-gradient(135deg,${s.color},${s.color}99);

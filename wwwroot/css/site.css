@@ -93,9 +93,12 @@
     box-sizing: border-box;
 }
 
-html,
-body {
+html {
     height: 100%;
+}
+
+body {
+    min-height: 100%;
     margin: 0;
     font-family: var(--font);
     font-size: 15px;
@@ -103,6 +106,16 @@ body {
     background-color: var(--bg-primary);
     transition: background-color var(--transition), color var(--transition);
     scroll-behavior: smooth;
+    display: flex;
+    flex-direction: column;
+    background-image: radial-gradient(ellipse at 20% 10%, rgba(108, 99, 255, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 80%, rgba(0, 212, 170, 0.08) 0%, transparent 60%);
+    background-attachment: fixed;
+}
+
+[data-theme="light"] body {
+    background-image: radial-gradient(ellipse at 20% 10%, rgba(91, 82, 232, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 80%, rgba(0, 184, 148, 0.06) 0%, transparent 60%);
 }
 
 /* Custom form styles with high placeholder legibility */
@@ -130,21 +143,20 @@ textarea::placeholder,
     opacity: 0.82 !important;
 }
 
-body {
-    display: flex;
-    flex-direction: column;
-    background-image: radial-gradient(ellipse at 20% 10%, rgba(108, 99, 255, 0.12) 0%, transparent 60%),
-        radial-gradient(ellipse at 80% 80%, rgba(0, 212, 170, 0.08) 0%, transparent 60%);
-    background-attachment: fixed;
-}
-
-[data-theme="light"] body {
-    background-image: radial-gradient(ellipse at 20% 10%, rgba(91, 82, 232, 0.08) 0%, transparent 60%),
-        radial-gradient(ellipse at 80% 80%, rgba(0, 184, 148, 0.06) 0%, transparent 60%);
-}
-
 main {
     flex: 1;
+}
+
+/* ─── Footer ────────────────────────────────────────────── */
+.nh-footer {
+    margin-top: auto;
+    padding: 1.25rem 0;
+    border-top: 1px solid var(--border);
+    background: var(--bg-nav);
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 a {
@@ -1221,6 +1233,11 @@ h6 {
     color: var(--badge-comp-text);
 }
 
+.status-rejected {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}
+
 /* ─── CARD HOVER GLOW ────────────────────────────────────── */
 .nh-card {
     transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
@@ -1252,7 +1269,7 @@ h6 {
 /* ─── AUTH PAGES full-height (hide layout padding) ──────── */
 body:has(.login-wrapper),
 body:has(.register-wrapper) {
-    overflow: hidden;
+    overflow-y: auto;
 }
 
 /* ─── ANIMATED MESH GRADIENT BG (form side) ─────────────── */
